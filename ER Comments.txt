@@ -1,0 +1,12 @@
+Kristen and Nathan,
+You need to add a Leg Instance entity that holds 
+data for a leg traveled on a specific date by a 
+specific airplane (tail number).  This is different 
+from the scheduled leg which specifies only the day 
+of the week scheduled.
+
+Your design will be improved by adding an airplane 
+type entity which holds all data common to a type.  
+I showed an example of this in class.
+
+Best regards, Ed
