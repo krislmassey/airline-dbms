@@ -101,10 +101,19 @@ Functions in Class
         return None
         #end GetOptionMain
 
-    
+    def select(self, values, table, condition):
+        """Generic select, returns all rows"""
+        query = "SELECT %s FROM %s WHERE %s"
+        self.cursor.execute(query, (values, table, condition))
+        rows = self.cursor.fetchall()
+        return rows
 
+    def select_one(self, values, table, condition):
+        """Generic select function, returns first row"""
+        query = "SELECT %s FROM %s WHERE %s"
+        self.cursor.execute(query, (values, table, condition))
+        row = self.cursor.fetchone()
+        return row
 
-
-
-
-        
+    def insert(self, table, columns, values):
+        """Generic insert function, returns false on failure"""
