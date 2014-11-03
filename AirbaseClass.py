@@ -233,9 +233,10 @@ Functions in Class
 
         columns_L = columnstring.split(',')  #parse the strings into lists
         columnstring = '\',\''.join(columns_L)  #joins the lists back into appropriately formatted strings
-        return select(table, columns, wherestring)
-
-
+        self.select(table, columns, wherestring)
+        rows = self.cursor.fetchall()
+        for row in rows:
+            print row
 
 #################################################
 ###  SQL STATEMENT WRITE FUNCTION 
