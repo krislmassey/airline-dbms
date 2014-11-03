@@ -152,13 +152,9 @@ Functions in Class
 ###  DELETE STATEMENT FUNCTION
 #################################################
 
-    def delete(self, table, columnstring, valuestring):
-
-        op_status = 0
-
-        
-
-        return op_status  #0 on failure, 1 on success
+    def delete(self, table, wherestring):
+        query = "DELETE FROM {table} WHERE {wherestring}".format(table, wherestring)
+        return self.dbWrite(query)
 
 #################################################
 ###  INSERT STATEMENT FUNCTION
