@@ -117,3 +117,33 @@ Functions in Class
 
     def insert(self, table, columns, values):
         """Generic insert function, returns false on failure"""
+        if len(columns) != len(values):
+            return False
+
+        all_values = [table] + [col for col in columns] + [val for val in values]
+        all_values = tuple(all_values)
+        query = "INSERT INTO %s("
+
+        #Add column fields
+        first = True
+        for i in range(len(columns)):
+            if first:
+                query += "%s"
+                first = False
+            else:
+                query += ", %s"
+
+        query += ") VALUES("
+
+        #Add value fields
+        first = True
+        for i in range(len(values):
+            if first:
+                query += "%s"
+                first = False
+            else:
+                query += ", %s"
+
+        query += ")"
+        #execute the query
+        self.cursor.execute(query, all_values)
