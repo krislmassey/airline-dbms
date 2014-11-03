@@ -1,5 +1,15 @@
+DROP TABLE IF EXISTS Landing_Allowances;
+DROP TABLE IF EXISTS Flight_Days;
+DROP TABLE IF EXISTS Seats;
+DROP TABLE IF EXISTS Leg_Instance;
+DROP TABLE IF EXISTS Leg_Schedule;
+DROP TABLE IF EXISTS Airplane;
+DROP TABLE IF EXISTS Fares;
+DROP TABLE IF EXISTS Flights;
+DROP TABLE IF EXISTS Airport;
+
 CREATE TABLE Airport (
-UNIQUE Airport_Code DECIMAL (6,0) NOT NULL,
+Airport_Code DECIMAL (6,0) UNIQUE NOT NULL,
 Airport_Name VARCHAR(50),
 City VARCHAR(25),
 State CHAR(2),
@@ -7,7 +17,7 @@ PRIMARY KEY (Airport_Code)
 );
 
 CREATE TABLE Flights (
-UNIQUE Flight_Number INTEGER NOT NULL AUTO_INCREMENT,
+Flight_Number INTEGER UNIQUE NOT NULL AUTO_INCREMENT,
 Airline VARCHAR(25),
 Start_Airport_Code DECIMAL(6,0) NOT NULL,
 End_Airport_Code DECIMAL (6,0) NOT NULL,
@@ -17,7 +27,7 @@ FOREIGN KEY (End_Airport_Code) REFERENCES Airport(Airport_Code)
 );
 
 CREATE TABLE Fares (
-UNIQUE Fare_Code INTEGER NOT NULL AUTO_INCREMENT,
+Fare_Code INTEGER UNIQUE NOT NULL AUTO_INCREMENT,
 Flight_Number INTEGER NOT NULL,
 Fare_Cost DECIMAL (5,2),
 Fare_Restrictions VARCHAR(1000),
@@ -26,7 +36,7 @@ FOREIGN KEY (Flight_Number) REFERENCES Flights(Flight_Number)
 );
 
 CREATE TABLE Airplane (
-UNIQUE Tail_Number INTEGER NOT NULL,
+Tail_Number INTEGER UNIQUE NOT NULL,
 Seat_Number INTEGER,
 Max_Seat_Number INTEGER,
 Model VARCHAR(25),
@@ -36,28 +46,27 @@ PRIMARY KEY (Tail_Number)
 );
 
 CREATE TABLE Leg_Schedule (
-UNIQUE Leg_Number INTEGER NOT NULL AUTO_INCREMENT,
+Leg_Number INTEGER UNIQUE NOT NULL AUTO_INCREMENT,
 Flight_Number INTEGER NOT NULL,
 Start_Airport_Code DECIMAL(6,0) NOT NULL,
 End_Airport_Code DECIMAL (6,0) NOT NULL,
 Scheduled_Departure_Time VARCHAR(20),
 Scheduled_Arrival_Time VARCHAR(20),
-Date VARCHAR(20),
+Leg_Date VARCHAR(20),
 Available_Seat_Number INTEGER,
 PRIMARY KEY (Leg_Number),
-FOREIGN KEY (Leg_Number) REFERENCES Leg_Instance(Leg_Number),  //This statement wont work until (Leg_Instance) is created and will have to be added in later in an “Alter Table” command //
 FOREIGN KEY (Flight_Number) REFERENCES Flights(Flight_Number),
 FOREIGN KEY (Start_Airport_Code) REFERENCES Airport(Airport_Code),
-FOREIGN KEY (End_Airport_Code REFERENCES Airport(Airport_Code)
+FOREIGN KEY (End_Airport_Code) REFERENCES Airport(Airport_Code)
 );
 
 CREATE TABLE Leg_Instance (
-UNIQUE Leg_Number INTEGER NOT NULL,
+Leg_Number INTEGER UNIQUE NOT NULL,
 Flight_Number INTEGER NOT NULL,
 Actual_Departure_Time VARCHAR(20),
 Actual_Arrival_Time VARCHAR(20),
 Tail_Number INTEGER NOT NULL,
-Date VARCHAR(20)
+Leg_Date VARCHAR(20),
 PRIMARY KEY(Leg_Number),
 FOREIGN KEY (Flight_Number) REFERENCES Flights(Flight_Number),
 FOREIGN KEY (Tail_Number) REFERENCES Airplane(Tail_Number)
@@ -68,8 +77,8 @@ Seat_Number VARCHAR(4) NOT NULL,
 Passenger_Name VARCHAR(20),
 Passenger_Phone INTEGER,
 Flight_Number INTEGER NOT NULL,
-Leg_Number DECIMAL(12,0) NOT NULL,
-Available CHAR(1),
+Leg_Number INTEGER NOT NULL,
+Available BOOLEAN,
 FOREIGN KEY (Flight_Number) REFERENCES Flights(Flight_Number),
 FOREIGN KEY (Leg_Number) REFERENCES Leg_Instance(Leg_Number)
 );
