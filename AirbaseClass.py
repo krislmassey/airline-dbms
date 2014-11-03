@@ -5,8 +5,7 @@ Project: DBMS Project
 Name   : Airbase.py
 
 @authors: Kristen Massey and Nathan Smith
-'''
-'''
+
 ###############################################################################
 
 Mississippi State University
@@ -25,11 +24,8 @@ import re
 import warnings
 
 
-class Airbase(object):
 
-'''
-Functions in Class
-'''
+class Airbase(object):
 
 #################################################
 ###  iNITIALIZE CLASS OBJECT
@@ -54,7 +50,7 @@ Functions in Class
     def startupDemo(self):
 
         #get database connection
-        self._DBconnection = MySQLdb.connect(self._host, self._user, self._passwd, self._db)
+        self._DBconnection = MySQLdb.connect(self.host, self.user, self.passwd, self.db)
         print "Database connection successful"
 
         #create cursor

@@ -22,7 +22,7 @@ import os
 import sys
 import warnings
 import traceback
-import AirbaseClass
+import AirbaseClass as Airbase
 
 
 def main():
@@ -46,7 +46,7 @@ def main():
     print "Attempting Startup Demo..."
     
     try:
-        MyDbObject.Airbase.StartupDemo()
+        MyDbObject.startupDemo()
         connectionSuccess = 1
         print "Attempt Success!"
         
@@ -65,7 +65,7 @@ def main():
         print "Attempting Startup..."
 
         try:
-            MyDbObject.Airbase.Startup()
+            MyDbObject.startup()
             print "Attempt Success!"
 
         except Exception, msg:
@@ -81,7 +81,7 @@ def main():
     #Go to User Options
     while 1:
 
-        MyDbObject.Airbase.GetOptionMain()
+        MyDbObject.getOptionMain()
 
 
     #end
