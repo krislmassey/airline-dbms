@@ -89,6 +89,25 @@ Functions in Class
         #end Startup
 
 
+#################################################
+###  CLOSE DATABASE CONNECTION
+#################################################
+
+    def CloseDB(self):
+        try:
+            self._DBconnection.close()
+            print "Airbase Connection Closed"
+        except:
+            "Error closing Airbase Connection."
+            pass
+        
+        return None
+        #end CloseDB
+
+
+#################################################
+###  GET USER OPTIONS FOR DATABASE VIEWING/EDITTING
+################################################# 
 
     def GetOptionMain(self):
 
@@ -97,9 +116,103 @@ Functions in Class
         option = raw_input()
 
         #print instructions for User Input
+        if option == 'help':
+            print "Valid Airbase Commands Listed Below:" + \
+                  "====================================" + \
+                  "" + \
+                  "e     -make a new entry\n" + \
+                  "u     -update an existing entry\n" + \
+                  "d     -delete an existing entry\n" + \
+                  "v     -view all entries in a table\n" + \
+                  "f     -find an entry in a table\n" + \
+                  "exit  -close Airbase\n" + \
+                  "\n"
+
+        elif option == 'e':
+            self.NewEntry()
+        elif option == 'u':
+            self.UpdateEntry()
+        elif option == 'd':
+            self.DeleteEntry()
+        elif option == 'v':
+            self.CreateView()
+        elif option == 'f':
+            self.FindEntry()
+        elif option == 'exit':
+            self.CloseDB()
+        else:
+            print "Invalid input.\n"
+            
 
         return None
         #end GetOptionMain
+
+
+#################################################
+###  DELETE STATEMENT FUNCTION
+#################################################
+
+    def Delete(self, table, columnstring, valuestring):
+
+        op_status = 0
+
+        
+
+        return op_status  #0 on failure, 1 on success
+
+#################################################
+###  INSERT STATEMENT FUNCTION
+#################################################
+
+    def Insert(self, table, columnstring, valuesstring):
+
+        op_status = 0
+
+        table = raw_input("Enter the name of the table to alter:")
+        
+        #warning, the lines below are case sensitive and cannot have spaces
+        columnstring = raw_input("Enter the name of the columns to alter (separated by commas):")
+        valuesstring = raw_input("Enter the values to enter into the columns (separated by commas):")
+
+        #have to edit/parse the values entered in columnstring and valuesstring
+        #at this point so they will fit with the SQL statement below (individual
+        #items need to be separated by apostrophes)
+
+        columns_L = columnstring.split(',')  #parse the strings into lists
+        values_L = valuesstring.split(',')
+
+        valuesstring = '\',\''.join(values_L)
+        columnstring = '\',\''.join(columns_L)  #joins the lists back into appropriately formatted strings
+
+        SQLstatement = "INSERT INTO '" + table + "('" + columnstring + "')" + \
+                       "' VALUES('" + valuesstring + "');"
+
+        self.dbWrite(SQLstatement);
+
+
+        return op_status #0 on failure, 1 on success
+
+
+
+#################################################
+###  UPDATE STATEMENT FUNCTION
+#################################################
+    def Update(self, table, columnstring, valuesstring):
+
+        op_status = 0
+
+        return op_status #0 on failure, 1 on success
+
+
+
+#################################################
+###  SELECT STATEMENT FUCTION
+#################################################
+    def Select(self, table, columnstring, wherestring):
+
+        op_status = 0
+
+        return op_status #0 on failure, 1 on success
 
     def select(self, values, table, condition):
         """Generic select, returns all rows"""
@@ -115,35 +228,38 @@ Functions in Class
         row = self.cursor.fetchone()
         return row
 
-    def insert(self, table, columns, values):
-        """Generic insert function, returns false on failure"""
-        if len(columns) != len(values):
-            return False
+    def NewEntry(self):
+        return None
 
-        all_values = [table] + [col for col in columns] + [val for val in values]
-        all_values = tuple(all_values)
-        query = "INSERT INTO %s("
+    def UpdateEntry(self):
+        return None
 
-        #Add column fields
-        first = True
-        for i in range(len(columns)):
-            if first:
-                query += "%s"
-                first = False
-            else:
-                query += ", %s"
+    def DeleteEntry(self):
+        return None
 
-        query += ") VALUES("
+    def CreateView(self):
+        return None
 
-        #Add value fields
-        first = True
-        for i in range(len(values):
-            if first:
-                query += "%s"
-                first = False
-            else:
-                query += ", %s"
+    def FindEntry(self):
+        return None
 
-        query += ")"
-        #execute the query
-        self.cursor.execute(query, all_values)
+
+
+#################################################
+###  SQL STATEMENT WRITE FUNCTION 
+#################################################
+    def dbWrite(self, SQLstatement):
+        op_status = 0
+        
+        try:
+            self._cursor.execute(SQLstatement)
+            op_status = 1
+            
+        except Exception, msg:
+            #elevates sql write error to user
+            warnings.warn(msg, Warning)
+            
+        return op_status #0 on failure, 1 on success
+
+
+        
