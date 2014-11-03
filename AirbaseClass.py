@@ -51,7 +51,7 @@ Functions in Class
 ###  DEMO PYTHON STARTUP DATABASE CONNECTION
 #################################################
 
-    def StartupDemo(self):
+    def startupDemo(self):
 
         #get database connection
         self._DBconnection = MySQLdb.connect(self._host, self._user, self._passwd, self._db)
@@ -75,7 +75,7 @@ Functions in Class
 ###  PYTHON STARTUP DATABASE CONNECTION
 #################################################    
 
-    def Startup(self):
+    def startup(self):
 
         #get database connection
         self._DBconnection = MySQLdb.connect(self._host, self._user, self._passwd, self._db)
@@ -93,7 +93,7 @@ Functions in Class
 ###  CLOSE DATABASE CONNECTION
 #################################################
 
-    def CloseDB(self):
+    def closeDB(self):
         try:
             self._DBconnection.close()
             print "Airbase Connection Closed"
@@ -109,7 +109,7 @@ Functions in Class
 ###  GET USER OPTIONS FOR DATABASE VIEWING/EDITTING
 ################################################# 
 
-    def GetOptionMain(self):
+    def getOptionMain(self):
 
         print "Enter option, for list of options enter 'help'"
 
@@ -129,17 +129,17 @@ Functions in Class
                   "\n"
 
         elif option == 'e':
-            self.NewEntry()
+            self.newEntry()
         elif option == 'u':
-            self.UpdateEntry()
+            self.updateEntry()
         elif option == 'd':
-            self.DeleteEntry()
+            self.deleteEntry()
         elif option == 'v':
-            self.CreateView()
+            self.createView()
         elif option == 'f':
-            self.FindEntry()
+            self.findEntry()
         elif option == 'exit':
-            self.CloseDB()
+            self.closeDB()
         else:
             print "Invalid input.\n"
             
@@ -152,7 +152,7 @@ Functions in Class
 ###  DELETE STATEMENT FUNCTION
 #################################################
 
-    def Delete(self, table, columnstring, valuestring):
+    def delete(self, table, columnstring, valuestring):
 
         op_status = 0
 
@@ -164,7 +164,7 @@ Functions in Class
 ###  INSERT STATEMENT FUNCTION
 #################################################
 
-    def Insert(self, table, columnstring, valuesstring):
+    def insert(self, table, columnstring, valuesstring):
 
         op_status = 0
 
@@ -197,7 +197,7 @@ Functions in Class
 #################################################
 ###  UPDATE STATEMENT FUNCTION
 #################################################
-    def Update(self, table, columnstring, valuesstring):
+    def update(self, table, columnstring, valuesstring):
 
         op_status = 0
 
@@ -208,39 +208,23 @@ Functions in Class
 #################################################
 ###  SELECT STATEMENT FUCTION
 #################################################
-    def Select(self, table, columnstring, wherestring):
+    def select(self, table, columnstring, wherestring):
+        query = "SELECT {columns} FROM {table} WHERE {wherestring}".format(columnstring, table, wherestring)
+        return self.dbWrite(query)
 
-        op_status = 0
-
-        return op_status #0 on failure, 1 on success
-
-    def select(self, values, table, condition):
-        """Generic select, returns all rows"""
-        query = "SELECT %s FROM %s WHERE %s"
-        self.cursor.execute(query, (values, table, condition))
-        rows = self.cursor.fetchall()
-        return rows
-
-    def select_one(self, values, table, condition):
-        """Generic select function, returns first row"""
-        query = "SELECT %s FROM %s WHERE %s"
-        self.cursor.execute(query, (values, table, condition))
-        row = self.cursor.fetchone()
-        return row
-
-    def NewEntry(self):
+    def newEntry(self):
         return None
 
-    def UpdateEntry(self):
+    def updateEntry(self):
         return None
 
-    def DeleteEntry(self):
+    def deleteEntry(self):
         return None
 
-    def CreateView(self):
+    def createView(self):
         return None
 
-    def FindEntry(self):
+    def findEntry(self):
         return None
 
 
