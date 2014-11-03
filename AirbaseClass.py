@@ -161,11 +161,32 @@ class Airbase(object):
 
         op_status = 0
 
-        table = raw_input("Enter the name of the table to alter:")
-        
-        #warning, the lines below are case sensitive and cannot have spaces
-        columnstring = raw_input("Enter the name of the columns to alter (separated by commas):")
-        valuesstring = raw_input("Enter the values to enter into the columns (separated by commas):")
+        #have to edit/parse the values entered in columnstring and valuesstring
+        #at this point so they will fit with the SQL statement below (individual
+        #items need to be separated by apostrophes)
+
+        columns_L = columnstring.split(',')  #parse the strings into lists
+        values_L = valuesstring.split(',')
+
+        valuesstring = '\',\''.join(values_L)
+        columnstring = '\',\''.join(columns_L)  #joins the lists back into appropriately formatted strings
+
+        SQLstatement = "INSERT INTO '" + table + "('" + columnstring + "')" + \
+                       "' VALUES('" + valuesstring + "');"
+
+        op_status = self.dbWrite(SQLstatement);
+
+
+        return op_status #0 on failure, 1 on success
+
+
+
+#################################################
+###  UPDATE STATEMENT FUNCTION
+#################################################
+    def update(self, table, columnstring, valuesstring):
+
+        op_status = 0
 
         #have to edit/parse the values entered in columnstring and valuesstring
         #at this point so they will fit with the SQL statement below (individual
@@ -180,19 +201,7 @@ class Airbase(object):
         SQLstatement = "INSERT INTO '" + table + "('" + columnstring + "')" + \
                        "' VALUES('" + valuesstring + "');"
 
-        self.dbWrite(SQLstatement);
-
-
-        return op_status #0 on failure, 1 on success
-
-
-
-#################################################
-###  UPDATE STATEMENT FUNCTION
-#################################################
-    def update(self, table, columnstring, valuesstring):
-
-        op_status = 0
+        op_status = self.dbWrite(SQLstatement);
 
         return op_status #0 on failure, 1 on success
 
@@ -205,9 +214,49 @@ class Airbase(object):
         query = "SELECT {columns} FROM {table} WHERE {wherestring}".format(columnstring, table, wherestring)
         return self.dbWrite(query)
 
-    def newEntry(self):
-        return None
 
+#################################################
+###  NEW ENTRY IN DATABASE (to existing table)
+#################################################
+
+    def newEntry(self):
+
+        #success variable (1 if true, 0 if false) determines if operation ran successfully
+
+        #get input from the user
+        table = raw_input("Enter the name of the table to alter:")
+        
+        #warning, the lines below are case sensitive and cannot have spaces
+        columnstring = raw_input("Enter the name of the columns to alter (separated by commas):")
+        valuesstring = raw_input("Enter the values to enter into the columns (separated by commas):")
+
+        #do a check here to make sure an entry by that primary key doesn't already exist, need a function
+        #for this called checkEntry.  Function will return 1 if the entry already exists, 0 if it doesnt.
+
+        entryExists = 0
+
+        if entryExists:
+            print "An entry for the value specified already exists.  Do you want to overwrite it?"
+            updateEntry = raw_input "Overwrite?(Y/N):"
+            if updateEntry == 'Y':
+                success = self.update(table, columnstring, valuesstring)
+            else:
+                print "Operation Cancelled"
+
+        else:
+            success = self.insert(table, columnstring, valuesstring)
+
+        if success:
+            self._DBconnection.commit()
+            print "Change(s) submitted successfully."
+        
+        return None
+        #end of newEntry
+    
+
+#################################################
+###  NEW ENTRY IN DATABASE (to existing table)
+#################################################
     def updateEntry(self):
         return None
 
@@ -217,6 +266,10 @@ class Airbase(object):
     def createView(self):
         return None
 
+    
+#################################################
+###  FIND ENTRY IN DATABASE (in existing table)
+#################################################
     def findEntry(self):
         table = raw_input("Enter the name of the table to query: ")
         
@@ -250,6 +303,7 @@ class Airbase(object):
             warnings.warn(msg, Warning)
             
         return op_status #0 on failure, 1 on success
+
 
 
         
