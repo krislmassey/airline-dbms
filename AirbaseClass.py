@@ -136,6 +136,7 @@ class Airbase(object):
             self.findEntry()
         elif option == 'exit':
             self.closeDB()
+            sys.exit()
         else:
             print "Invalid input.\n"
             
