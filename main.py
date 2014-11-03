@@ -30,7 +30,7 @@ def main():
     db = 'Airbase'     #Database Name
     host = 'localhost'  #IP Address of machine
     username = 'root'       #Accessing User
-    passwd = 'furuba'         #User's password
+    passwd = ''         #User's password
 
 
     # could put all of the above in a .ini file for quick reference

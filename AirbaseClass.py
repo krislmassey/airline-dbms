@@ -74,7 +74,7 @@ class Airbase(object):
     def startup(self):
 
         #get database connection
-        self._DBconnection = MySQLdb.connect(self._host, self._user, self._passwd, self._db)
+        self._DBconnection = MySQLdb.connect(self.host, self.user, self.passwd, self.db)
         print "Database connection successful"
 
         #create cursor
