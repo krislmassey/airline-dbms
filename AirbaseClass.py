@@ -221,7 +221,19 @@ Functions in Class
         return None
 
     def findEntry(self):
-        return None
+        table = raw_input("Enter the name of the table to query: ")
+        
+        #warning, the lines below are case sensitive and cannot have spaces
+        columnstring = raw_input("Enter the names of the columns to query (separated by commas): ")
+        wherestring = raw_input("Enter the wherestring: ")
+
+        #have to edit/parse the values entered in columnstring and valuesstring
+        #at this point so they will fit with the SQL statement below (individual
+        #items need to be separated by apostrophes)
+
+        columns_L = columnstring.split(',')  #parse the strings into lists
+        columnstring = '\',\''.join(columns_L)  #joins the lists back into appropriately formatted strings
+        return select(table, columns, wherestring)
 
 
 
