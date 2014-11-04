@@ -4,99 +4,117 @@ DROP TABLE IF EXISTS Seats;
 DROP TABLE IF EXISTS Leg_Instance;
 DROP TABLE IF EXISTS Leg_Schedule;
 DROP TABLE IF EXISTS Airplane;
-DROP TABLE IF EXISTS Fares;
+DROP TABLE IF EXISTS Airplane_Type;
+DROP TABLE IF EXISTS Flight_Fares;
 DROP TABLE IF EXISTS Flights;
+DROP TABLE IF EXISTS Fares;
 DROP TABLE IF EXISTS Airport;
 
 CREATE TABLE Airport (
-Airport_Code DECIMAL (6,0) UNIQUE NOT NULL,
-Airport_Name VARCHAR(50),
-City VARCHAR(25),
-State CHAR(2),
-PRIMARY KEY (Airport_Code)
-);
-
-CREATE TABLE Flights (
-Flight_Number INTEGER UNIQUE NOT NULL AUTO_INCREMENT,
-Airline VARCHAR(25),
-Start_Airport_Code DECIMAL(6,0) NOT NULL,
-End_Airport_Code DECIMAL (6,0) NOT NULL,
-PRIMARY KEY (Flight_Number),
-FOREIGN KEY (Start_Airport_Code) REFERENCES Airport(Airport_Code),
-FOREIGN KEY (End_Airport_Code) REFERENCES Airport(Airport_Code)
+airport_code VARCHAR(6) UNIQUE NOT NULL,
+airport_name VARCHAR(50),
+city VARCHAR(25),
+state VARCHAR(2),
+PRIMARY KEY (airport_code)
 );
 
 CREATE TABLE Fares (
-Fare_Code INTEGER UNIQUE NOT NULL AUTO_INCREMENT,
-Flight_Number INTEGER NOT NULL,
-Fare_Cost DECIMAL (5,2),
-Fare_Restrictions VARCHAR(1000),
-PRIMARY KEY (Fare_Code),
-FOREIGN KEY (Flight_Number) REFERENCES Flights(Flight_Number)
+fare_code INTEGER UNIQUE NOT NULL AUTO_INCREMENT,
+fare_cost DECIMAL (5,2),
+fare_restrictions VARCHAR(1000),
+PRIMARY KEY (fare_code)
+);
+
+CREATE TABLE Flights (
+flight_number INTEGER UNIQUE NOT NULL AUTO_INCREMENT,
+airline VARCHAR(25),
+fare_code INTEGER NOT NULL,
+start_airport_code VARCHAR(6) NOT NULL,
+end_airport_code VARCHAR(6) NOT NULL,
+PRIMARY KEY (flight_number),
+FOREIGN KEY (start_airport_code) REFERENCES Airport(airport_code),
+FOREIGN KEY (end_airport_code) REFERENCES Airport(airport_code),
+FOREIGN KEY (fare_code) REFERENCES Fares(fare_code) 
+);
+
+CREATE TABLE Flight_Fares (
+fare_code INTEGER NOT NULL,
+flight_number INTEGER NOT NULL,
+FOREIGN KEY (fare_code) REFERENCES Fares(fare_code),
+FOREIGN KEY (flight_number) REFERENCES Flights(flight_number)
+);
+
+CREATE TABLE Airplane_Type (
+model VARCHAR(25) UNIQUE NOT NULL,
+manufacturer VARCHAR(25),
+max_seat_number INTEGER,
+PRIMARY KEY (model)
 );
 
 CREATE TABLE Airplane (
-Tail_Number INTEGER UNIQUE NOT NULL,
-Seat_Number INTEGER,
-Max_Seat_Number INTEGER,
-Model VARCHAR(25),
-Manufacturer VARCHAR(25),
-CHECK (Seat_Number < Max_Seat_Number),
-PRIMARY KEY (Tail_Number)
+tail_number INTEGER UNIQUE NOT NULL,
+seat_number INTEGER,
+model VARCHAR(25) NOT NULL,
+CHECK (seat_number < max_seat_number),
+PRIMARY KEY (tail_number),
+FOREIGN KEY (model) REFERENCES Airplane_Type(model)
 );
 
 CREATE TABLE Leg_Schedule (
-Leg_Number INTEGER UNIQUE NOT NULL AUTO_INCREMENT,
-Flight_Number INTEGER NOT NULL,
-Start_Airport_Code DECIMAL(6,0) NOT NULL,
-End_Airport_Code DECIMAL (6,0) NOT NULL,
-Scheduled_Departure_Time VARCHAR(20),
-Scheduled_Arrival_Time VARCHAR(20),
-Leg_Date VARCHAR(20),
-Available_Seat_Number INTEGER,
-PRIMARY KEY (Leg_Number),
-FOREIGN KEY (Flight_Number) REFERENCES Flights(Flight_Number),
-FOREIGN KEY (Start_Airport_Code) REFERENCES Airport(Airport_Code),
-FOREIGN KEY (End_Airport_Code) REFERENCES Airport(Airport_Code)
+leg_number INTEGER UNIQUE NOT NULL AUTO_INCREMENT,
+flight_number INTEGER NOT NULL,
+start_airport_code VARCHAR(6) NOT NULL,
+end_airport_code VARCHAR(6) NOT NULL,
+scheduled_departure_time VARCHAR(20),
+scheduled_arrival_time VARCHAR(20),
+date VARCHAR(20),
+available_seat_number INTEGER,
+PRIMARY KEY (leg_number),
+FOREIGN KEY (flight_number) REFERENCES Flights(flight_number),
+FOREIGN KEY (start_airport_code) REFERENCES Airport(airport_code),
+FOREIGN KEY (end_airport_code) REFERENCES Airport(airport_code)
 );
 
 CREATE TABLE Leg_Instance (
-Leg_Number INTEGER UNIQUE NOT NULL,
-Flight_Number INTEGER NOT NULL,
-Actual_Departure_Time VARCHAR(20),
-Actual_Arrival_Time VARCHAR(20),
-Tail_Number INTEGER NOT NULL,
-Leg_Date VARCHAR(20),
-PRIMARY KEY(Leg_Number),
-FOREIGN KEY (Flight_Number) REFERENCES Flights(Flight_Number),
-FOREIGN KEY (Tail_Number) REFERENCES Airplane(Tail_Number)
+leg_number INTEGER UNIQUE NOT NULL,
+flight_number INTEGER NOT NULL,
+actual_departure_time VARCHAR(20),
+actual_arrival_time VARCHAR(20),
+tail_number INTEGER NOT NULL,
+date VARCHAR(20),
+PRIMARY KEY(leg_number),
+FOREIGN KEY (flight_number) REFERENCES Flights(flight_number),
+FOREIGN KEY (tail_number) REFERENCES Airplane(tail_number),
+FOREIGN KEY (leg_number) REFERENCES Leg_Schedule(leg_number)
 );
 
 CREATE TABLE Seats (
-Seat_Number VARCHAR(4) NOT NULL,
-Passenger_Name VARCHAR(20),
-Passenger_Phone INTEGER,
-Flight_Number INTEGER NOT NULL,
-Leg_Number INTEGER NOT NULL,
-Available BOOLEAN,
-FOREIGN KEY (Flight_Number) REFERENCES Flights(Flight_Number),
-FOREIGN KEY (Leg_Number) REFERENCES Leg_Instance(Leg_Number)
+seat_number VARCHAR(4) NOT NULL,
+passenger_name VARCHAR(20),
+passenger_phone INTEGER,
+flight_number INTEGER NOT NULL,
+leg_number INTEGER NOT NULL,
+available BOOLEAN,
+FOREIGN KEY (flight_number) REFERENCES Flights(flight_number),
+FOREIGN KEY (leg_number) REFERENCES Leg_Instance(leg_number)
 );
 
 CREATE TABLE Flight_Days (
-Flight_Number INTEGER NOT NULL,
-Monday CHAR(1),
-Tuesday CHAR(1),
-Wednesday CHAR(1),
-Thursday CHAR(1),
-Friday CHAR(1),
-Saturday CHAR(1),
-Sunday CHAR(1),
-FOREIGN KEY (Flight_Number) REFERENCES Flights(Flight_Number)
+flight_number INTEGER NOT NULL,
+monday CHAR(1),
+tuesday CHAR(1),
+wednesday CHAR(1),
+thursday CHAR(1),
+friday CHAR(1),
+saturday CHAR(1),
+sunday CHAR(1),
+FOREIGN KEY (flight_number) REFERENCES Flights(flight_number)
 );
 
 CREATE TABLE Landing_Allowances (
-Model VARCHAR(20) NOT NULL,
-Airport_Code DECIMAL(6,0) NOT NULL,
-Allowed CHAR(3) NOT NULL
+model VARCHAR(20) NOT NULL,
+airport_code VARCHAR(6) NOT NULL,
+allowed BOOLEAN NOT NULL,
+FOREIGN KEY (model) REFERENCES Airplane_Type(model),
+FOREIGN KEY (airport_code) REFERENCES Airport(airport_code)
 );
