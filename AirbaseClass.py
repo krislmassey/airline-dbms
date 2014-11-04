@@ -150,7 +150,7 @@ class Airbase(object):
 #################################################
 
     def delete(self, table, wherestring):
-        query = "DELETE FROM {table} WHERE {wherestring}".format(table, wherestring)
+        query = "DELETE FROM "+table+" WHERE "+wherestring
         return self.dbWrite(query)
 
 #################################################
@@ -167,7 +167,7 @@ class Airbase(object):
 
         values_L = valuesstring.split(',')
         valuesstring = '\',\''.join(values_L)
-        
+
         SQLstatement = "INSERT INTO "+table+"("+columnstring+") VALUES('"+valuesstring+"')"
         op_status = self.dbWrite(SQLstatement);
 
@@ -179,7 +179,7 @@ class Airbase(object):
 #################################################
 ###  UPDATE STATEMENT FUNCTION
 #################################################
-    def update(self, table, columnstring, valuesstring):
+    def update(self, table, columnstring, valuesstring, wherestring):
 
         op_status = 0
 
@@ -187,14 +187,19 @@ class Airbase(object):
         #at this point so they will fit with the SQL statement below (individual
         #items need to be separated by apostrophes)
 
-        columns_L = columnstring.split(',')  #parse the strings into lists
         values_L = valuesstring.split(',')
+        columns_L = columnstring.split(',')
 
-        valuesstring = '\',\''.join(values_L)
-        columnstring = '\',\''.join(columns_L)  #joins the lists back into appropriately formatted strings
+        setstring = ""
+        first = True
+        for col, val in zip(columns_L, values_L):
+            if first:
+                setstring += col+"='"+val+"'"
+                first = False
+            else:
+                setstring += ", "+col+"='"+val+"'"
 
-        SQLstatement = "INSERT INTO '" + table + "('" + columnstring + "')" + \
-                       "' VALUES('" + valuesstring + "');"
+        SQLstatement = "UPDATE "+table+" SET "+setstring+" WHERE "+wherestring
 
         op_status = self.dbWrite(SQLstatement);
 
@@ -253,9 +258,67 @@ class Airbase(object):
 ###  NEW ENTRY IN DATABASE (to existing table)
 #################################################
     def updateEntry(self):
+        #success variable (1 if true, 0 if false) determines if operation ran successfully
+
+        #get input from the user
+        table = raw_input("Enter the name of the table to alter: ")
+        
+        #warning, the lines below are case sensitive and cannot have spaces
+        columnstring = raw_input("Enter the name of the columns to alter (separated by commas): ")
+        valuesstring = raw_input("Enter the values to enter into the columns (separated by commas): ")
+        wherestring = raw_input("Enter the condition to check: ")
+
+        #do a check here to make sure an entry by that primary key doesn't already exist, need a function
+        #for this called checkEntry.  Function will return 1 if the entry already exists, 0 if it doesnt.
+
+        entryExists = 0
+
+        if entryExists:
+            print "An entry for the value specified already exists.  Do you want to overwrite it?"
+            updateEntry = raw_input("Overwrite?(Y/N):")
+            if updateEntry == 'Y':
+                success = self.update(table, columnstring, valuesstring)
+            else:
+                print "Operation Cancelled"
+
+        else:
+            success = self.update(table, columnstring, valuesstring, wherestring)
+
+        if success:
+            self._DBconnection.commit()
+            print "Change(s) submitted successfully."
+        
         return None
 
     def deleteEntry(self):
+        #success variable (1 if true, 0 if false) determines if operation ran successfully
+
+        #get input from the user
+        table = raw_input("Enter the name of the table to alter: ")
+        
+        #warning, the lines below are case sensitive and cannot have spaces
+        wherestring = raw_input("Enter the condition to check: ")
+
+        #do a check here to make sure an entry by that primary key doesn't already exist, need a function
+        #for this called checkEntry.  Function will return 1 if the entry already exists, 0 if it doesnt.
+
+        entryExists = 0
+
+        if entryExists:
+            print "An entry for the value specified already exists.  Do you want to overwrite it?"
+            updateEntry = raw_input("Overwrite?(Y/N):")
+            if updateEntry == 'Y':
+                success = self.update(table, columnstring, valuesstring)
+            else:
+                print "Operation Cancelled"
+
+        else:
+            success = self.delete(table, wherestring)
+
+        if success:
+            self._DBconnection.commit()
+            print "Change(s) submitted successfully."
+        
         return None
 
     def createView(self):
