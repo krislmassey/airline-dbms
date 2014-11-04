@@ -237,7 +237,7 @@ class Airbase(object):
 
         if entryExists:
             print "An entry for the value specified already exists.  Do you want to overwrite it?"
-            updateEntry = raw_input "Overwrite?(Y/N):"
+            updateEntry = raw_input("Overwrite?(Y/N):")
             if updateEntry == 'Y':
                 success = self.update(table, columnstring, valuesstring)
             else:
