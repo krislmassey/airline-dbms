@@ -169,6 +169,7 @@ class Airbase(object):
         valuesstring = '\',\''.join(values_L)
 
         SQLstatement = "INSERT INTO "+table+"("+columnstring+") VALUES('"+valuesstring+"')"
+        print SQLstatement
         op_status = self.dbWrite(SQLstatement);
 
 
