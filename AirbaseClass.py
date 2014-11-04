@@ -165,15 +165,10 @@ class Airbase(object):
         #at this point so they will fit with the SQL statement below (individual
         #items need to be separated by apostrophes)
 
-        columns_L = columnstring.split(',')  #parse the strings into lists
         values_L = valuesstring.split(',')
-
         valuesstring = '\',\''.join(values_L)
-        columnstring = '\',\''.join(columns_L)  #joins the lists back into appropriately formatted strings
-
-        SQLstatement = "INSERT INTO '" + table + "('" + columnstring + "')" + \
-                       "' VALUES('" + valuesstring + "');"
-
+        
+        SQLstatement = "INSERT INTO "+table+"("+columnstring+") VALUES('"+valuesstring+"')"
         op_status = self.dbWrite(SQLstatement);
 
 
@@ -216,7 +211,7 @@ class Airbase(object):
 
 
 #################################################
-###  NEW ENTRY IN DATABASE (to existing table)
+###   ENTRY IN DATABASE (to existing table)
 #################################################
 
     def newEntry(self):
