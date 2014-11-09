@@ -69,7 +69,7 @@ class Airbase(object):
 
 #################################################
 ###  PYTHON STARTUP DATABASE CONNECTION
-#################################################    
+#################################################
 
     def startup(self):
 
@@ -96,14 +96,14 @@ class Airbase(object):
         except:
             "Error closing Airbase Connection."
             pass
-        
+
         return None
         #end CloseDB
 
 
 #################################################
 ###  GET USER OPTIONS FOR DATABASE VIEWING/EDITTING
-################################################# 
+#################################################
 
     def getOptionMain(self):
 
@@ -121,25 +121,28 @@ class Airbase(object):
                   "d     -delete an existing entry\n" + \
                   "v     -view all entries in a table\n" + \
                   "f     -find an entry in a table\n" + \
+                  "c     -customer operations" + \
                   "exit  -close Airbase\n" + \
                   "\n"
 
-        elif option == 'e':
+        elif option.lower() == 'e':
             self.newEntry()
-        elif option == 'u':
+        elif option.lower() == 'u':
             self.updateEntry()
-        elif option == 'd':
+        elif option.lower() == 'd':
             self.deleteEntry()
-        elif option == 'v':
-            self.createView()
-        elif option == 'f':
+        elif option.lower() == 'v':
+            self.displayTable()
+        elif option.lower() == 'f':
             self.findEntry()
-        elif option == 'exit':
+        elif option.lower() == 'c':
+            self.customerMode()
+        elif option.lower() == 'exit':
             self.closeDB()
             sys.exit()
         else:
             print "Invalid input.\n"
-            
+
 
         return None
         #end GetOptionMain
@@ -149,8 +152,10 @@ class Airbase(object):
 ###  DELETE STATEMENT FUNCTION
 #################################################
 
-    def delete(self, table, wherestring):
-        query = "DELETE FROM "+table+" WHERE "+wherestring
+    def delete(self, table, wherestring=None):
+        query = "DELETE FROM "+table
+        if wherestring:
+            query += " WHERE "+wherestring
         return self.dbWrite(query)
 
 #################################################
@@ -180,7 +185,7 @@ class Airbase(object):
 #################################################
 ###  UPDATE STATEMENT FUNCTION
 #################################################
-    def update(self, table, columnstring, valuesstring, wherestring):
+    def update(self, table, columnstring, valuesstring, wherestring=None):
 
         op_status = 0
 
@@ -200,7 +205,9 @@ class Airbase(object):
             else:
                 setstring += ", "+col+"='"+val+"'"
 
-        SQLstatement = "UPDATE "+table+" SET "+setstring+" WHERE "+wherestring
+        SQLstatement = "UPDATE "+table+" SET "+setstring
+        if wherestring:
+            SQLstatement += " WHERE "+wherestring
 
         op_status = self.dbWrite(SQLstatement);
 
@@ -211,8 +218,11 @@ class Airbase(object):
 #################################################
 ###  SELECT STATEMENT FUCTION
 #################################################
-    def select(self, table, columnstring, wherestring):
-        query = "SELECT {columns} FROM {table} WHERE {wherestring}".format(columnstring, table, wherestring)
+    def select(self, table, columnstring, wherestring = None):
+        query = "SELECT "+columnstring+" FROM "+table
+        #Add the wherestring if there is one
+        if wherestring:
+            query += " WHERE "+wherestring
         return self.dbWrite(query)
 
 
@@ -226,7 +236,7 @@ class Airbase(object):
 
         #get input from the user
         table = raw_input("Enter the name of the table to alter:")
-        
+
         #warning, the lines below are case sensitive and cannot have spaces
         columnstring = raw_input("Enter the name of the columns to alter (separated by commas):")
         valuesstring = raw_input("Enter the values to enter into the columns (separated by commas):")
@@ -250,10 +260,10 @@ class Airbase(object):
         if success:
             self._DBconnection.commit()
             print "Change(s) submitted successfully."
-        
+
         return None
         #end of newEntry
-    
+
 
 #################################################
 ###  NEW ENTRY IN DATABASE (to existing table)
@@ -263,11 +273,13 @@ class Airbase(object):
 
         #get input from the user
         table = raw_input("Enter the name of the table to alter: ")
-        
+
         #warning, the lines below are case sensitive and cannot have spaces
         columnstring = raw_input("Enter the name of the columns to alter (separated by commas): ")
         valuesstring = raw_input("Enter the values to enter into the columns (separated by commas): ")
         wherestring = raw_input("Enter the condition to check: ")
+        if wherestring == '':
+            wherestring = None
 
         #do a check here to make sure an entry by that primary key doesn't already exist, need a function
         #for this called checkEntry.  Function will return 1 if the entry already exists, 0 if it doesnt.
@@ -288,7 +300,7 @@ class Airbase(object):
         if success:
             self._DBconnection.commit()
             print "Change(s) submitted successfully."
-        
+
         return None
 
     def deleteEntry(self):
@@ -296,9 +308,11 @@ class Airbase(object):
 
         #get input from the user
         table = raw_input("Enter the name of the table to alter: ")
-        
+
         #warning, the lines below are case sensitive and cannot have spaces
         wherestring = raw_input("Enter the condition to check: ")
+        if wherestring == '':
+            wherestring = None
 
         #do a check here to make sure an entry by that primary key doesn't already exist, need a function
         #for this called checkEntry.  Function will return 1 if the entry already exists, 0 if it doesnt.
@@ -319,50 +333,73 @@ class Airbase(object):
         if success:
             self._DBconnection.commit()
             print "Change(s) submitted successfully."
-        
+
         return None
 
-    def createView(self):
+    def displayTable(self):
+        """Prints all columns in a single table"""
+        table = raw_input("Enter table to display: ")
+
+        if self.select(table, '*'):
+            self.printRows()
+
         return None
 
-    
+
 #################################################
 ###  FIND ENTRY IN DATABASE (in existing table)
 #################################################
     def findEntry(self):
         table = raw_input("Enter the name of the table to query: ")
-        
+
         #warning, the lines below are case sensitive and cannot have spaces
         columnstring = raw_input("Enter the names of the columns to query (separated by commas): ")
         wherestring = raw_input("Enter the wherestring: ")
+        if wherestring == '':
+            wherestring = None
 
-        #have to edit/parse the values entered in columnstring and valuesstring
-        #at this point so they will fit with the SQL statement below (individual
-        #items need to be separated by apostrophes)
-
-        columns_L = columnstring.split(',')  #parse the strings into lists
-        columnstring = '\',\''.join(columns_L)  #joins the lists back into appropriately formatted strings
-        self.select(table, columns, wherestring)
-        rows = self.cursor.fetchall()
-        for row in rows:
-            print row
+        if self.select(table, columnstring, wherestring):
+            self.printRows()
 
 #################################################
-###  SQL STATEMENT WRITE FUNCTION 
+###  SQL STATEMENT WRITE FUNCTION
 #################################################
     def dbWrite(self, SQLstatement):
         op_status = 0
-        
+
         try:
             self._cursor.execute(SQLstatement)
             op_status = 1
-            
+
         except Exception, msg:
             #elevates sql write error to user
             warnings.warn(msg, Warning)
-            
+
         return op_status #0 on failure, 1 on success
 
+######################################
+###  DISPLAY SQL RESULTS FUNCTION  ###
+######################################
 
+    def printRows(self):
+        #http://stackoverflow.com/questions/10865483/print-results-in-mysql-format-with-python
+        results = self._cursor.fetchall()
+        widths = []
+        columns = []
+        tavnit = '|'
+        separator = '+'
 
-        
+        for cd in self._cursor.description:
+            widths.append(max(cd[2], len(cd[0])))
+            columns.append(cd[0])
+
+        for w in widths:
+            tavnit += " %-"+"%ss |" % (w,)
+            separator += '-'*w + '--+'
+
+        print(separator)
+        print(tavnit % tuple(columns))
+        print(separator)
+        for row in results:
+            print(tavnit % row)
+        print(separator)
