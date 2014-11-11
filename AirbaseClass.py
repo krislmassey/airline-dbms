@@ -113,15 +113,15 @@ class Airbase(object):
 
         #print instructions for User Input
         if option == 'help':
-            print "Valid Airbase Commands Listed Below:" + \
-                  "====================================" + \
-                  "" + \
+            print "Valid Airbase Commands Listed Below:\n" + \
+                  "====================================\n" + \
+                  "\n" + \
                   "e     -make a new entry\n" + \
                   "u     -update an existing entry\n" + \
                   "d     -delete an existing entry\n" + \
                   "v     -view all entries in a table\n" + \
                   "f     -find an entry in a table\n" + \
-                  "c     -customer operations" + \
+                  "c     -customer operations\n" + \
                   "exit  -close Airbase\n" + \
                   "\n"
 

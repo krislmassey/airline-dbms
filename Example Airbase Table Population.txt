@@ -1,0 +1,32 @@
+******Example Airbase Schema***********
+
+INSERT INTO Airport
+VALUES ('100000','Hartsfield-Jackson','Atlanta','GA');
+
+INSERT INTO Airport
+VALUES ('200000','Medgar Evers','Jackson','MS');
+
+INSERT INTO Airport
+VALUES ('300000','Huntsville International','Huntsville','AL');
+
+
+INSERT INTO Airport
+VALUES ('400000','George Bush Intercontinental','Houston','TX');
+
+
+INSERT INTO Airport
+VALUES ('500000','Nashville International','Nashville International','TN');
+
+
+INSERT INTO Airport
+VALUES ('600000','Sky Harbor','Phoenix','AZ');
+
+INSERT INTO Airport
+VALUES ('700000','Salt Lake International','Salt Lake City','UT');
+
+INSERT INTO Airport
+VALUES ('800000','Golden Triangle Regional','Starkville','MS');
+
+INSERT INTO Airport
+VALUES ('900000','Orlando International','Orlando','FL');
+
