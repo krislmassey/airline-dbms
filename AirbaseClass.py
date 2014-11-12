@@ -300,8 +300,13 @@ class Airbase(object):
         if success:
             self._DBconnection.commit()
             print "Change(s) submitted successfully."
-
         return None
+
+
+
+#################################################
+###  DELETES ENTRY IN DATABASE (from existing table)
+#################################################
 
     def deleteEntry(self):
         #success variable (1 if true, 0 if false) determines if operation ran successfully
@@ -336,6 +341,10 @@ class Airbase(object):
 
         return None
 
+
+#################################################
+###  DISPLAYS ENTRIES IN DATABASE
+#################################################
     def displayTable(self):
         """Prints all columns in a single table"""
         table = raw_input("Enter table to display: ")
@@ -357,9 +366,11 @@ class Airbase(object):
         wherestring = raw_input("Enter the wherestring: ")
         if wherestring == '':
             wherestring = None
-
-        if self.select(table, columnstring, wherestring):
+        try:
+            self.select(table, columnstring, wherestring)
             self.printRows()
+        except:
+            print "Problem with query.  Try again."
 
 #################################################
 ###  SQL STATEMENT WRITE FUNCTION
@@ -403,3 +414,141 @@ class Airbase(object):
         for row in results:
             print(tavnit % row)
         print(separator)
+
+
+######################################
+###  DISPLAY CUSTOMER OPTIONS      ###
+######################################
+
+    def customerMode(self):
+        print "Choose an option\n" + \
+              "****************\n" + \
+              "r          -make a reservation\n" + \
+              "d          -delete a reservation\n" + \
+              "f          -find flights for a round trip\n" + \
+              "c          -calculate cost of flight(s)\n" + \
+              "exit       -return to main option screen\n" + \
+              "\n"
+        choice = raw_input("Option:")
+
+        if choice == 'r':
+            self.reservation()
+        elif choice == 'd':
+            self.cancelReservation()
+        elif choice == 'f':
+            self.roundTrip
+        elif choice == 'c':
+            self.costCalculator()
+        elif choice == "exit":
+            print ""
+        else:
+            print "Invalid input"
+            self.customerMode()
+
+        return None
+
+
+######################################
+###  MAKE A RESERVATION            ###
+######################################
+    def reservation(self):
+        return None
+
+
+######################################
+###  CANCEL A RESERVATION          ###
+######################################
+    def cancelReservation(self):
+        return None
+
+######################################
+###  FIND A ROUND TRIP             ###
+######################################
+    def roundTrip(self):
+        start_City = raw_input("Enter the name of the departure city: ")
+        start_State = raw_input("Enter the initials of the departure state: ")
+        end_City = raw_input("Enter the name of the destination city: ")
+        end_State = raw_input("Enter the initials of the destination state: ")
+        departDate = raw_input("Enter the departure flight date (ex: 10/06/14): ")
+        returnDate = raw_input("Enter the return flight date (ex: 10/06/14): ")
+
+        
+        return None
+
+######################################
+###  CALCULATE COST OF TRIP(S)     ###
+######################################
+    def costCalculator(self):
+        #get flight to calculate cost for
+        #get flight class for ticket
+        #check to make sure class available for that flight
+            #if available, add and ask if they want to enter a new flight
+            #if not available, print error message and prompt to enter a different flight
+
+        addflight = True
+        flight_list = []
+        fare_list = []
+        fare_cost_list = []
+
+        flight_exists = False
+        fare_exists = False
+        fare_for_flight = False
+        cont = 'Y'
+
+        while addflight:
+            flight = raw_input("Enter flight number: ")
+            #check flights table to make sure flight exists
+            if not flight_exists:
+                print "Error: Flight code not found in Airbase.\n"
+                cont = raw_input("Continue?(Y/N): ")
+                if cont == 'N' or cont == 'n':
+                    return None   
+                continue
+            
+            fare = raw_input("Enter fare code: ")
+            #check fare table to make sure fare exists
+            if not fare_exists:
+                print "Error:  Fare code not found in Airbase.\n"
+                cont = raw_input("Continue?(Y/N): ")
+                if cont == 'N' or cont == 'n':
+                    return None 
+                continue
+            #check flight_fare table to make sure fare exists for flight specified
+            if not fare_for_flight:
+                print "Fare selected not available for flight specified"
+                cont = raw_input("Continue?(Y/N): ")
+                if cont == 'N' or cont == 'n':
+                    return None 
+                continue
+
+            flight_list.append(flight)
+            fare_list.append(fare)
+
+            continue_entry = raw_input("Do you want to add another flight?(Y/N): ")
+            if continue_entry == 'Y' or continue_entry == 'y':
+                addflight = True
+            else:
+                addflight = False
+
+        for fare in fare_list:
+            #find cost of fare
+            #put fare cost in fare_cost_list
+            continue
+
+        index = len(flight_list)
+        x = 0
+
+        #print out a table with all the flight numbers, fare codes, fare costs,
+        #and a final row with the total cost for the tickets
+
+        print "=======================================\n"
+        print "+ Flight          Fare           Cost +\n"
+        print "=======================================\n"
+        while x<index:
+            print "+ " + flight_list[x] + "\t\t\t" + fare_list[x] + "\t\t\t" + fare_cost_list[x] + " +\n"
+            x+=1
+        print "+_____________________________________+\n"
+        print "+ Total Cost:        " + str(totalCost) + " +\n"
+        print "========================================\n"
+                
+        return None

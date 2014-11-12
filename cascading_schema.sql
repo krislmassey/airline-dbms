@@ -28,7 +28,6 @@ PRIMARY KEY (fare_code)
 CREATE TABLE Flights (
 flight_number INTEGER UNIQUE NOT NULL AUTO_INCREMENT,
 airline VARCHAR(25),
-fare_code INTEGER NOT NULL,
 start_airport_code VARCHAR(6) NOT NULL,
 end_airport_code VARCHAR(6) NOT NULL,
 PRIMARY KEY (flight_number),
@@ -55,7 +54,6 @@ CREATE TABLE Airplane (
 tail_number INTEGER UNIQUE NOT NULL,
 seat_number INTEGER,
 model VARCHAR(25) NOT NULL,
-CHECK (seat_number < max_seat_number),
 PRIMARY KEY (tail_number),
 FOREIGN KEY (model) REFERENCES Airplane_Type(model) ON UPDATE CASCADE
 );
