@@ -465,6 +465,7 @@ class Airbase(object):
 ###  FIND A ROUND TRIP             ###
 ######################################
     def roundTrip(self):
+        #get necessary user input
         start_City = raw_input("Enter the name of the departure city: ")
         start_State = raw_input("Enter the initials of the departure state: ")
         end_City = raw_input("Enter the name of the destination city: ")
@@ -472,8 +473,86 @@ class Airbase(object):
         departDate = raw_input("Enter the departure flight date (ex: 10/06/14): ")
         returnDate = raw_input("Enter the return flight date (ex: 10/06/14): ")
 
+        #create variables to hold lists
+        startFlight_list = []
+        returnFlight_list = []
+
+        
+        #get list of all possible flights to the destination and list of all possible flight back
+        startFlight_list = oneWayTrip(start_City, start_State, end_City, end_State, departDate)
+        returnFlight_list = oneWayTrip(end_City, end_State, start_City, start_State, returnDate)
+
+
+        #print possible start flights
+        if len(startFlight_list) == 0:
+            print "Outset Flight Options:  \nNone"
+        else:
+            print "Outset Flight Options: \n"
+            for item in startFlight_list:
+                print str(item) + "\n"
+
+        #print possible return flights
+        if len(returnFlight_list) == 0:
+            print "Return Flight Options:  \nNone"
+        else:
+            print "Return Flight Options:  \n"
+            for item in returnFlight_list:
+                print str(item) + "\n"
+        
         
         return None
+
+
+
+######################################
+###  FIND VIABLE ONE-WAY TRIPS     ###
+######################################
+    def oneWayTrip(start_City, start_State, end_City, end_State, date):
+        flight_list = []
+        possibleFlight_list = []
+        startFlight_list = []
+        endFlight_list = []
+
+        #first find all flights associated with all flight legs that start
+        #in the start city, start state, on the date, put in a list
+        selectString = "SELECT L.flight_number FROM Leg_Schedule L Airport A " + \
+                       "WHERE A."
+                
+        #next find all the flights that end in the end city and the end State
+        #on the date specified, put in a list
+
+        #check to see if any of the flights that match these criteria overlap,
+        #if they do, put them into a new list
+        for flight in startFlight_list:
+            if flight in endFlight_list:
+                possibleFlight_list.append(flight)
+
+        #run the list of possible matches through routeCheck to make sure
+        #that the leg path connects them for the date specified
+        for flight in possibleFlight_list:
+            flightWorks = routeCheck(flight, start_City, start_State, end_City, end_State, date)
+            if flightWorks:
+                flight_list.append(flight)
+
+        
+        return flight_list
+
+
+    def routeCheck(flight, start_City, start_State, end_City, end_State, date):
+
+        #find the leg for the specified flight that starts in the start city and get the end city/state for that flight
+        #if no flight leg starts in the start city/state specified, return False
+
+    
+        #check if the end city for that leg matches the destination end city/state
+
+        #if yes, return flightWorks = True
+
+        #if no, call routeChecker again with the end city/state as the new start city/state
+        flightWorks = routeCheck(flight, start_City, start_State, end_City, end_State, date)
+
+        #if routeChecker 
+        return flightWorks
 
 ######################################
 ###  CALCULATE COST OF TRIP(S)     ###
