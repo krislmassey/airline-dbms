@@ -452,6 +452,19 @@ class Airbase(object):
 ###  MAKE A RESERVATION            ###
 ######################################
     def reservation(self):
+        #edits info on Seats table and leg_schedule table (decrements available seats)
+
+        #ask user for
+        #Name
+        #phone number (XXX)-XXX-XXXX
+        #flight number
+        #leg number (make it where they can add multiple at a time
+        #prompt if they want to add another flight
+
+        #autofill seat number
+        #Decrement leg_schedule.seats_available for all legs selected
+
+
         return None
 
 
@@ -459,6 +472,12 @@ class Airbase(object):
 ###  CANCEL A RESERVATION          ###
 ######################################
     def cancelReservation(self):
+
+        #delete rows from Seats where flight=user_input_flight
+        #and where leg_number = user_input_leg_number
+        #and where passenter name = user_input_name
+        
+        #decrement legs for every leg entered 
         return None
 
 ######################################
@@ -470,8 +489,8 @@ class Airbase(object):
         start_State = raw_input("Enter the initials of the departure state: ")
         end_City = raw_input("Enter the name of the destination city: ")
         end_State = raw_input("Enter the initials of the destination state: ")
-        departDate = raw_input("Enter the departure flight date (ex: 10/06/14): ")
-        returnDate = raw_input("Enter the return flight date (ex: 10/06/14): ")
+        departDate = raw_input("Enter the departure flight date (ex: 10/06/2014): ")
+        returnDate = raw_input("Enter the return flight date (ex: 10/06/2014): ")
 
         #create variables to hold lists
         startFlight_list = []
@@ -520,8 +539,13 @@ class Airbase(object):
                        "ON A.city = '" + str(start_City) + "' AND A.state = '" + str(start_State) + "' AND A.airport_code = L.start_airport_code AND L.date = '" + str(date) + "';"
         self._cursor.execute(selectString)
         start_Tuple = self._cursor.fetchall()
-        #map the tuple to a list (list formatting will be weird)
-        map(startFlight_list, start_Tuple)
+
+        if start_Tuple is not None:
+            #map the tuple to a list
+            for item in start_Tuple:
+                startFlight_list.append(str(item[0]))
+
+
                 
         #next find all the flights that end in the end city and the end State
         #on the date specified, put in a list
@@ -531,7 +555,10 @@ class Airbase(object):
         self._cursor.execute(selectString)
         end_Tuple = self._cursor.fetchall()
         #map the tuple to a list (list formatting will be weird)
-        map(endFlight_list, end_Tuple)
+        if end_Tuple is not None:
+            #map the items in the tuple to a list
+            for item in end_Tuple:
+                endFlight_list.append(str(item[0]))
 
         
         
@@ -563,7 +590,7 @@ class Airbase(object):
         #get the end airport code for the flight patching the criteria
         selectString = "SELECT L.end_airport_code FROM Leg_Schedule L " + \
                        "INNER JOIN Airport A " + \
-                       "ON L.airport_code=A.airport_code " + \
+                       "ON L.start_airport_code=A.airport_code " + \
                        "AND L.date = '" + str(date) + "' " + \
                        "AND L.flight_number='" + str(flight) + "' " + \
                        "AND A.city='" + str(start_City) + "' " + \
@@ -572,7 +599,7 @@ class Airbase(object):
         self._cursor.execute(selectString)
         result_Tuple = self._cursor.fetchone()
         #if no result, return False
-        if len(result_Tuple) == 0:
+        if result_Tuple is None:
             flightWorks = False
             return flightWorks
 
@@ -588,7 +615,7 @@ class Airbase(object):
         self._cursor.execute(selectString)
         result_Tuple = self._cursor.fetchone()
 
-        if len(result_Tuple) == 0:
+        if result_Tuple is None:
             flightWorks = False
             return flightWorks
         
@@ -603,7 +630,7 @@ class Airbase(object):
             #if no, call routeChecker again with the end city/state as the new start city/state
             start_City = city
             start_State = state
-            flightWorks = routeCheck(flight, start_City, start_State, end_City, end_State, date)
+            flightWorks = self.routeCheck(flight, start_City, start_State, end_City, end_State, date)
             #this keeps going until it finds a match or traverses the full flight path
 
          
