@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS Flights;
 DROP TABLE IF EXISTS Fares;
 DROP TABLE IF EXISTS Airport;
 
+
 CREATE TABLE Airport (
 airport_code VARCHAR(6) UNIQUE NOT NULL,
 airport_name VARCHAR(50),
@@ -19,22 +20,20 @@ PRIMARY KEY (airport_code)
 );
 
 CREATE TABLE Fares (
-fare_code INTEGER UNIQUE NOT NULL AUTO_INCREMENT,
+fare_code INTEGER UNIQUE NOT NULL,
 fare_cost DECIMAL (5,2),
 fare_restrictions VARCHAR(1000),
 PRIMARY KEY (fare_code)
 );
 
 CREATE TABLE Flights (
-flight_number INTEGER UNIQUE NOT NULL AUTO_INCREMENT,
+flight_number INTEGER UNIQUE NOT NULL,
 airline VARCHAR(25),
-fare_code INTEGER NOT NULL,
 start_airport_code VARCHAR(6) NOT NULL,
 end_airport_code VARCHAR(6) NOT NULL,
 PRIMARY KEY (flight_number),
 FOREIGN KEY (start_airport_code) REFERENCES Airport(airport_code),
-FOREIGN KEY (end_airport_code) REFERENCES Airport(airport_code),
-FOREIGN KEY (fare_code) REFERENCES Fares(fare_code) 
+FOREIGN KEY (end_airport_code) REFERENCES Airport(airport_code)
 );
 
 CREATE TABLE Flight_Fares (
@@ -61,7 +60,7 @@ FOREIGN KEY (model) REFERENCES Airplane_Type(model)
 );
 
 CREATE TABLE Leg_Schedule (
-leg_number INTEGER UNIQUE NOT NULL AUTO_INCREMENT,
+leg_number INTEGER UNIQUE NOT NULL,
 flight_number INTEGER NOT NULL,
 start_airport_code VARCHAR(6) NOT NULL,
 end_airport_code VARCHAR(6) NOT NULL,

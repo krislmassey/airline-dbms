@@ -517,7 +517,7 @@ class Airbase(object):
         #in the start city, start state, on the date, put in a list
         selectString = "SELECT L.flight_number FROM Leg_Schedule L " + \
                        "INNER JOIN Airport A " + \
-                       "ON A.city = '" + start_City + "' AND A.state = '" + start_State + "' AND A.airport_code = L.start_airport_code AND L.date = '" + date + "';"
+                       "ON A.city = '" + str(start_City) + "' AND A.state = '" + str(start_State) + "' AND A.airport_code = L.start_airport_code AND L.date = '" + str(date) + "';"
         self._cursor.execute(selectString)
         start_Tuple = self._cursor.fetchall()
         #map the tuple to a list (list formatting will be weird)
