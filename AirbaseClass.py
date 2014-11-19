@@ -436,7 +436,7 @@ class Airbase(object):
         elif choice == 'd':
             self.cancelReservation()
         elif choice == 'f':
-            self.roundTrip
+            self.roundTrip()
         elif choice == 'c':
             self.costCalculator()
         elif choice == "exit":
@@ -479,8 +479,8 @@ class Airbase(object):
 
         
         #get list of all possible flights to the destination and list of all possible flight back
-        startFlight_list = oneWayTrip(start_City, start_State, end_City, end_State, departDate)
-        returnFlight_list = oneWayTrip(end_City, end_State, start_City, start_State, returnDate)
+        startFlight_list = self.oneWayTrip(start_City, start_State, end_City, end_State, departDate)
+        returnFlight_list = self.oneWayTrip(end_City, end_State, start_City, start_State, returnDate)
 
 
         #print possible start flights
@@ -507,7 +507,7 @@ class Airbase(object):
 ######################################
 ###  FIND VIABLE ONE-WAY TRIPS     ###
 ######################################
-    def oneWayTrip(start_City, start_State, end_City, end_State, date):
+    def oneWayTrip(self, start_City, start_State, end_City, end_State, date):
         flight_list = []
         possibleFlight_list = []
         startFlight_list = []
@@ -515,12 +515,26 @@ class Airbase(object):
 
         #first find all flights associated with all flight legs that start
         #in the start city, start state, on the date, put in a list
-        selectString = "SELECT L.flight_number FROM Leg_Schedule L Airport A " + \
-                       "WHERE A."
+        selectString = "SELECT L.flight_number FROM Leg_Schedule L " + \
+                       "INNER JOIN Airport A " + \
+                       "ON A.city = '" + start_City + "' AND A.state = '" + start_State + "' AND A.airport_code = L.start_airport_code AND L.date = '" + date + "';"
+        self._cursor.execute(selectString)
+        start_Tuple = self._cursor.fetchall()
+        #map the tuple to a list (list formatting will be weird)
+        map(startFlight_list, start_Tuple)
                 
         #next find all the flights that end in the end city and the end State
         #on the date specified, put in a list
+        selectString = "SELECT L.flight_number FROM Leg_Schedule L " + \
+                       "INNER JOIN Airport A " + \
+                       "ON A.city = '" + end_City + "' AND A.state = '" + end_State + "' AND A.airport_code = L.end_airport_code AND L.date = '" + date + "';"
+        self._cursor.execute(selectString)
+        end_Tuple = self._cursor.fetchall()
+        #map the tuple to a list (list formatting will be weird)
+        map(endFlight_list, end_Tuple)
 
+        
+        
         #check to see if any of the flights that match these criteria overlap,
         #if they do, put them into a new list
         for flight in startFlight_list:
@@ -530,29 +544,73 @@ class Airbase(object):
         #run the list of possible matches through routeCheck to make sure
         #that the leg path connects them for the date specified
         for flight in possibleFlight_list:
-            flightWorks = routeCheck(flight, start_City, start_State, end_City, end_State, date)
+            flightWorks = self.routeCheck(flight, start_City, start_State, end_City, end_State, date)
             if flightWorks:
                 flight_list.append(flight)
 
-        
         return flight_list
 
 
-    def routeCheck(flight, start_City, start_State, end_City, end_State, date):
+
+#############################################################################
+###  CHECK TO MAKE SURE THE FLIGHT CONNECTS THE START/END DESTINATION     ###
+#############################################################################
+    def routeCheck(self, flight, start_City, start_State, end_City, end_State, date):
 
         #find the leg for the specified flight that starts in the start city and get the end city/state for that flight
         #if no flight leg starts in the start city/state specified, return False
 
-    
-        #check if the end city for that leg matches the destination end city/state
+        #get the end airport code for the flight patching the criteria
+        selectString = "SELECT L.end_airport_code FROM Leg_Schedule L " + \
+                       "INNER JOIN Airport A " + \
+                       "ON L.airport_code=A.airport_code " + \
+                       "AND L.date = '" + str(date) + "' " + \
+                       "AND L.flight_number='" + str(flight) + "' " + \
+                       "AND A.city='" + str(start_City) + "' " + \
+                       "AND A.state='" + str(start_State) + "';"
+        
+        self._cursor.execute(selectString)
+        result_Tuple = self._cursor.fetchone()
+        #if no result, return False
+        if len(result_Tuple) == 0:
+            flightWorks = False
+            return flightWorks
 
-        #if yes, return flightWorks = True
+        end_airport = result_Tuple[0] #gets end_airport_code from tuple
 
-        #if no, call routeChecker again with the end city/state as the new start city/state
-        flightWorks = routeCheck(flight, start_City, start_State, end_City, end_State, date)
+        
 
-        #if routeChecker 
+        #get end city and end state for end airport found from flight_leg
+        selectString = "SELECT A.city, A.state " + \
+                       "FROM Airport A " + \
+                       "WHERE A.airport_code='" + str(end_airport) + "';"
+        
+        self._cursor.execute(selectString)
+        result_Tuple = self._cursor.fetchone()
+
+        if len(result_Tuple) == 0:
+            flightWorks = False
+            return flightWorks
+        
+        city = str(result_Tuple[0])
+        state = str(result_Tuple[1])
+
+
+        #check if the city/state found match the target city/state
+        if city == end_City and state == end_State:
+            flightWorks = True
+        else:
+            #if no, call routeChecker again with the end city/state as the new start city/state
+            start_City = city
+            start_State = state
+            flightWorks = routeCheck(flight, start_City, start_State, end_City, end_State, date)
+            #this keeps going until it finds a match or traverses the full flight path
+
+         
         return flightWorks
+
+
+    
 
 ######################################
 ###  CALCULATE COST OF TRIP(S)     ###
