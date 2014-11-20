@@ -496,19 +496,36 @@ class Airbase(object):
             self.reserve(name, phone, flight_number, leg_numbers)
         else:
             return -1
-        #autofill seat number
-        #Decrement leg_schedule.seats_available for all legs selected
-        return None
+        return True
 
 
 ######################################
 ###  CANCEL A RESERVATION          ###
 ######################################
+    def cancel(self, seat_number, leg_number, name):
+        if not self.update("Seats", "available", "false", 'seat_number='+seat_number+' AND name="'+name+"'"):
+            return False
+        elif not self.update("Leg_Schedule", "available_seat_number", "available_seat_number + 1", "leg_number="+leg_number):
+            return False
+        return True
+
     def cancelReservation(self):
 
         #delete rows from Seats where flight=user_input_flight
+        seat_number = raw_input("Enter seat nubmer: ")
         #and where leg_number = user_input_leg_number
+        leg_number = raw_input("Enter leg number: ")
         #and where passenter name = user_input_name
+        name = raw_input("Enter name: ")
+
+        self.select("Seats", "seat_number", 'name="'+name+'" AND leg_number='+leg_number)
+        if not self._cursor.fetchone():
+            print "Seat number "+seat_number+" not found."
+            return 0
+
+        if not self.cancel(seat_number, leg_number, name):
+            print "Error cancelling reservation."
+            return 0
 
         #decrement legs for every leg entered
         return None
