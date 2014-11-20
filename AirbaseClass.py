@@ -121,6 +121,7 @@ class Airbase(object):
                   "d     -delete an existing entry\n" + \
                   "v     -view all entries in a table\n" + \
                   "f     -find an entry in a table\n" + \
+                  "t     -list all tables\n" + \
                   "c     -customer operations\n" + \
                   "exit  -close Airbase\n" + \
                   "\n"
@@ -135,6 +136,8 @@ class Airbase(object):
             self.displayTable()
         elif option.lower() == 'f':
             self.findEntry()
+        elif option.lower() == 't':
+            self.displayAllTables()
         elif option.lower() == 'c':
             self.customerMode()
         elif option.lower() == 'exit':
@@ -361,6 +364,14 @@ class Airbase(object):
             print "Problem with query.  Try again."
 
 #################################################
+###  DISPLAY ALL TABLES
+#################################################
+    def displayAllTables(self):
+        self.dbWrite("SHOW TABLES")
+        self.printRows()
+        return None
+
+#################################################
 ###  SQL STATEMENT WRITE FUNCTION
 #################################################
     def dbWrite(self, SQLstatement):
@@ -392,8 +403,6 @@ class Airbase(object):
             widths.append(max(cd[2], len(cd[0])))
             columns.append(cd[0])
 
-        print(columns)
-        print(widths)
         for w in widths:
             tavnit += " %-"+"%ss |" % (w,)
             separator += '-'*w + '--+'
