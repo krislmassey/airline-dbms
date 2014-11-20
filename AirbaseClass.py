@@ -372,7 +372,7 @@ class Airbase(object):
 
         except Exception, msg:
             #elevates sql write error to user
-            warnings.warn(msg, Warning)
+            warnings.warn(str(msg), Warning)
 
         return op_status #0 on failure, 1 on success
 
