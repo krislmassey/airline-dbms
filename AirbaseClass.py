@@ -654,7 +654,6 @@ class Airbase(object):
         fare_list = []
         fare_cost_list = []
 
-        flight_exists = False
         fare_exists = False
         fare_for_flight = False
         cont = 'Y'
@@ -662,27 +661,29 @@ class Airbase(object):
         while addflight:
             flight = raw_input("Enter flight number: ")
             #check flights table to make sure flight exists
-            if not flight_exists:
+            selectStatement = "SELECT * FROM Flights F WHERE F.flight_number='" + str(flight) + "';"
+            self._cursor.execute(selectStatement)
+            flightFound = self._cursor.fetchall()
+            
+        
+            if flightFound is None:
                 print "Error: Flight code not found in Airbase.\n"
                 cont = raw_input("Continue?(Y/N): ")
                 if cont == 'N' or cont == 'n':
-                    return None   
+                    break
                 continue
             
             fare = raw_input("Enter fare code: ")
             #check fare table to make sure fare exists
-            if not fare_exists:
-                print "Error:  Fare code not found in Airbase.\n"
-                cont = raw_input("Continue?(Y/N): ")
-                if cont == 'N' or cont == 'n':
-                    return None 
-                continue
-            #check flight_fare table to make sure fare exists for flight specified
-            if not fare_for_flight:
+            selectStatement = "SELECT * FROM Flight_Fares F WHERE F.flight_number='" + str(flight) + "' AND F.fare_code='" + str(fare) + "';"
+            self._cursor.execute(selectStatement)
+            fare_exists = self._cursor.fetchall()
+
+            if fare_exists is None:
                 print "Fare selected not available for flight specified"
                 cont = raw_input("Continue?(Y/N): ")
                 if cont == 'N' or cont == 'n':
-                    return None 
+                    break
                 continue
 
             flight_list.append(flight)
@@ -694,10 +695,22 @@ class Airbase(object):
             else:
                 addflight = False
 
+            continue
+        
+
         for fare in fare_list:
             #find cost of fare
+            selectStatement = "SELECT F.fare_cost FROM Fares F WHERE F.fare_code='" + str(fare) + "';"
+            self._cursor.execute(selectStatement)
+            cost = self._cursor.fetchone()
             #put fare cost in fare_cost_list
-            continue
+            fare_cost_list.append(str(cost[0]))
+            
+
+        totalCost = 0.00
+        if len(flight_list) > 0:
+            for item in fare_cost_list:
+                totalCost+=float(item)
 
         index = len(flight_list)
         x = 0
@@ -705,14 +718,14 @@ class Airbase(object):
         #print out a table with all the flight numbers, fare codes, fare costs,
         #and a final row with the total cost for the tickets
 
-        print "=======================================\n"
-        print "+ Flight          Fare           Cost +\n"
-        print "=======================================\n"
+        print "=========================================\n"
+        print "+ Flight      Fare             Cost +\n"
+        print "=========================================\n"
         while x<index:
-            print "+ " + flight_list[x] + "\t\t\t" + fare_list[x] + "\t\t\t" + fare_cost_list[x] + " +\n"
+            print "| " + flight_list[x] + "\t\t" + fare_list[x] + "\t\t$" + fare_cost_list[x] + " |\n"
             x+=1
-        print "+_____________________________________+\n"
-        print "+ Total Cost:        " + str(totalCost) + " +\n"
+        print "|_______________________________________|\n"
+        print "| Total Cost:        " + str(totalCost) + " |\n"
         print "========================================\n"
                 
         return None
