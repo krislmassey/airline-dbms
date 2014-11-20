@@ -451,20 +451,53 @@ class Airbase(object):
 ######################################
 ###  MAKE A RESERVATION            ###
 ######################################
+    def reserve(self, name, phone, flight_number, leg_numbers):
+        for number in leg_numbers:
+            self.select("Seats", "seat_number", "available=True AND flight_number="+flight_number)
+            seat_number = self._cursor.fetchone()
+            if not self.update("Seats", "name,phone_number,available", name+","+phone+",false", "seat_number="+seat_number):
+                print "Error reserving seat "+seat_number+" on leg "+number+"."
+                return False
+            elif not self.update("Leg_Schedule", "available_seat_number", "available_seat_number - 1", "leg_number="+number):
+                print "Error decrementing available seat number on leg "+number+"."
+            else:
+                "Seat "+seat_number+" reserved on leg "+number+".\n"
+
+
     def reservation(self):
         #edits info on Seats table and leg_schedule table (decrements available seats)
 
         #ask user for
         #Name
+        name = raw_input("Enter your name: ")
         #phone number (XXX)-XXX-XXXX
+        phone = raw_input("Enter your phone number in format (xxx)-xxx-xxx: ")
         #flight number
+        flight_number = raw_input("Enter the flight number: ")
+        #check if flight_number exists
+        self.select("Flights", "flight_number", "flight_number = "+flight_number)
+        if not self._cursor.fetchone():
+            print "Flight number " + flight_number + " not found. Please select a valid flight.\n"
+            return -1
         #leg number (make it where they can add multiple at a time
-        #prompt if they want to add another flight
-
+        leg_numbers = raw_input("Enter the leg number(s), separated by commas: ")
+        #check if leg numbers exist
+        leg_numbers = leg_numbers.split(",")
+        for number in leg_numbers:
+            self.select("Leg_Schedule", "leg_number", "leg_number = "+number.strip())
+            if not self._cursor.fetchone():
+                print "Leg number " + number + "not found. Please select a valid leg.\n"
+                return -1
+        #display the total cost and confirm
+        confirm = raw_input("Are you sure you want to reserve this flight? (Y/N): ")
+        if confirm.upper() == "N":
+            return -1
+        elif confirm.upper() == "Y":
+            self.reserve(name, phone, flight_number, leg_numbers)
+        else:
+            return -1
         #autofill seat number
         #Decrement leg_schedule.seats_available for all legs selected
-
-
         return None
 
 
@@ -476,8 +509,8 @@ class Airbase(object):
         #delete rows from Seats where flight=user_input_flight
         #and where leg_number = user_input_leg_number
         #and where passenter name = user_input_name
-        
-        #decrement legs for every leg entered 
+
+        #decrement legs for every leg entered
         return None
 
 ######################################
@@ -496,7 +529,7 @@ class Airbase(object):
         startFlight_list = []
         returnFlight_list = []
 
-        
+
         #get list of all possible flights to the destination and list of all possible flight back
         startFlight_list = self.oneWayTrip(start_City, start_State, end_City, end_State, departDate)
         returnFlight_list = self.oneWayTrip(end_City, end_State, start_City, start_State, returnDate)
@@ -517,8 +550,8 @@ class Airbase(object):
             print "Return Flight Options:  \n"
             for item in returnFlight_list:
                 print str(item) + "\n"
-        
-        
+
+
         return None
 
 
@@ -546,7 +579,7 @@ class Airbase(object):
                 startFlight_list.append(str(item[0]))
 
 
-                
+
         #next find all the flights that end in the end city and the end State
         #on the date specified, put in a list
         selectString = "SELECT L.flight_number FROM Leg_Schedule L " + \
@@ -560,8 +593,8 @@ class Airbase(object):
             for item in end_Tuple:
                 endFlight_list.append(str(item[0]))
 
-        
-        
+
+
         #check to see if any of the flights that match these criteria overlap,
         #if they do, put them into a new list
         for flight in startFlight_list:
@@ -595,7 +628,7 @@ class Airbase(object):
                        "AND L.flight_number='" + str(flight) + "' " + \
                        "AND A.city='" + str(start_City) + "' " + \
                        "AND A.state='" + str(start_State) + "';"
-        
+
         self._cursor.execute(selectString)
         result_Tuple = self._cursor.fetchone()
         #if no result, return False
@@ -605,20 +638,20 @@ class Airbase(object):
 
         end_airport = result_Tuple[0] #gets end_airport_code from tuple
 
-        
+
 
         #get end city and end state for end airport found from flight_leg
         selectString = "SELECT A.city, A.state " + \
                        "FROM Airport A " + \
                        "WHERE A.airport_code='" + str(end_airport) + "';"
-        
+
         self._cursor.execute(selectString)
         result_Tuple = self._cursor.fetchone()
 
         if result_Tuple is None:
             flightWorks = False
             return flightWorks
-        
+
         city = str(result_Tuple[0])
         state = str(result_Tuple[1])
 
@@ -633,11 +666,11 @@ class Airbase(object):
             flightWorks = self.routeCheck(flight, start_City, start_State, end_City, end_State, date)
             #this keeps going until it finds a match or traverses the full flight path
 
-         
+
         return flightWorks
 
 
-    
+
 
 ######################################
 ###  CALCULATE COST OF TRIP(S)     ###
@@ -664,15 +697,15 @@ class Airbase(object):
             selectStatement = "SELECT * FROM Flights F WHERE F.flight_number='" + str(flight) + "';"
             self._cursor.execute(selectStatement)
             flightFound = self._cursor.fetchall()
-            
-        
+
+
             if flightFound is None:
                 print "Error: Flight code not found in Airbase.\n"
                 cont = raw_input("Continue?(Y/N): ")
                 if cont == 'N' or cont == 'n':
                     break
                 continue
-            
+
             fare = raw_input("Enter fare code: ")
             #check fare table to make sure fare exists
             selectStatement = "SELECT * FROM Flight_Fares F WHERE F.flight_number='" + str(flight) + "' AND F.fare_code='" + str(fare) + "';"
@@ -696,7 +729,7 @@ class Airbase(object):
                 addflight = False
 
             continue
-        
+
 
         for fare in fare_list:
             #find cost of fare
@@ -705,7 +738,7 @@ class Airbase(object):
             cost = self._cursor.fetchone()
             #put fare cost in fare_cost_list
             fare_cost_list.append(str(cost[0]))
-            
+
 
         totalCost = 0.00
         if len(flight_list) > 0:
@@ -727,5 +760,5 @@ class Airbase(object):
         print "|_______________________________________|\n"
         print "| Total Cost:        " + str(totalCost) + " |\n"
         print "========================================\n"
-                
+
         return None
