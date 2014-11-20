@@ -483,10 +483,13 @@ class Airbase(object):
         #check if leg numbers exist
         leg_numbers = leg_numbers.split(",")
         for number in leg_numbers:
-            self.select("Leg_Schedule", "leg_number", "leg_number = "+number.strip())
-            if not self._cursor.fetchone():
+            self.select("Leg_Schedule", "leg_number, available_seat_number", "leg_number = "+number.strip())
+            row = self._cursor.fetchone()
+            if not row:
                 print "Leg number " + number + "not found. Please select a valid leg.\n"
                 return -1
+            elif int(row[1]) <= 0:
+                print "No seats available on leg "+number+"."
         #display the total cost and confirm
         self.costCalculator(flight_number)
         confirm = raw_input("Are you sure you want to reserve this flight? (Y/N): ")
