@@ -392,6 +392,8 @@ class Airbase(object):
             widths.append(max(cd[2], len(cd[0])))
             columns.append(cd[0])
 
+        print(columns)
+        print(widths)
         for w in widths:
             tavnit += " %-"+"%ss |" % (w,)
             separator += '-'*w + '--+'
@@ -755,13 +757,26 @@ class Airbase(object):
         #print out a table with all the flight numbers, fare codes, fare costs,
         #and a final row with the total cost for the tickets
 
-        print "=========================================\n"
-        print "+ Flight      Fare             Cost +\n"
-        print "=========================================\n"
-        for flight, fare, cost in zip(flight_list, fare_list, fare_cost_list):
-            print "| " + flight + "\t\t" + fare + "\t\t$" + cost + " |\n"
-        print "|_______________________________________|\n"
-        print "| Total Cost:        " + str(totalCost) + " |\n"
-        print "========================================\n"
+        #http://stackoverflow.com/questions/10865483/print-results-in-mysql-format-with-python
+        widths = [6, 4]
+        tavnit = '|'
+        separator = '+'
 
-        return totalCost
+        widths.append(len(max(fare_cost_list, key=len)))
+        columns = ["Flight", "Fare", "Cost"]
+
+        for w in widths:
+            tavnit += " %-"+"%ss |" % (w,)
+            separator += '-'*w + '--+'
+
+        print(separator)
+        print(tavnit % tuple(columns))
+        print(separator)
+        for flight, fare, cost in zip(flight_list, fare_list, fare_cost_list):
+            row = (flight, fare, cost)
+            print(tavnit % row)
+        print(separator)
+        print "Total Cost: "+str(totalCost)
+
+
+        return None
