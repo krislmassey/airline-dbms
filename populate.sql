@@ -1,4 +1,3 @@
-******Example Airbase Schema***********
 
 INSERT INTO Airport
 VALUES ('100000','Hartsfield-Jackson','Atlanta','GA');
