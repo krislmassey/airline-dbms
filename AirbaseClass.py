@@ -187,7 +187,7 @@ class Airbase(object):
 #################################################
     def update(self, table, columnstring, valuesstring, wherestring=None):
 
-        op_status = 0
+        op_status = 1
 
         #have to edit/parse the values entered in columnstring and valuesstring
         #at this point so they will fit with the SQL statement below (individual
@@ -209,8 +209,10 @@ class Airbase(object):
         if wherestring:
             SQLstatement += " WHERE "+wherestring
 
-        op_status = self.dbWrite(SQLstatement);
-
+        try:
+            self.dbWrite(SQLstatement);
+        except:
+            op_status = 0
         return op_status #0 on failure, 1 on success
 
 
@@ -319,21 +321,7 @@ class Airbase(object):
         if wherestring == '':
             wherestring = None
 
-        #do a check here to make sure an entry by that primary key doesn't already exist, need a function
-        #for this called checkEntry.  Function will return 1 if the entry already exists, 0 if it doesnt.
-
-        entryExists = 0
-
-        if entryExists:
-            print "An entry for the value specified already exists.  Do you want to overwrite it?"
-            updateEntry = raw_input("Overwrite?(Y/N):")
-            if updateEntry == 'Y':
-                success = self.update(table, columnstring, valuesstring)
-            else:
-                print "Operation Cancelled"
-
-        else:
-            success = self.delete(table, wherestring)
+        success = self.delete(table, wherestring)
 
         if success:
             self._DBconnection.commit()
@@ -489,6 +477,7 @@ class Airbase(object):
                 print "Leg number " + number + "not found. Please select a valid leg.\n"
                 return -1
         #display the total cost and confirm
+        self.costCalculator(flight_number)
         confirm = raw_input("Are you sure you want to reserve this flight? (Y/N): ")
         if confirm.upper() == "N":
             return -1
@@ -692,7 +681,7 @@ class Airbase(object):
 ######################################
 ###  CALCULATE COST OF TRIP(S)     ###
 ######################################
-    def costCalculator(self):
+    def costCalculator(self, flight=None):
         #get flight to calculate cost for
         #get flight class for ticket
         #check to make sure class available for that flight
@@ -705,11 +694,13 @@ class Airbase(object):
         fare_cost_list = []
 
         fare_exists = False
-        fare_for_flight = False
         cont = 'Y'
 
         while addflight:
-            flight = raw_input("Enter flight number: ")
+            if not flight:
+                flight = raw_input("Enter flight number: ")
+            else:
+                addflight = False
             #check flights table to make sure flight exists
             selectStatement = "SELECT * FROM Flights F WHERE F.flight_number='" + str(flight) + "';"
             self._cursor.execute(selectStatement)
@@ -739,13 +730,12 @@ class Airbase(object):
             flight_list.append(flight)
             fare_list.append(fare)
 
-            continue_entry = raw_input("Do you want to add another flight?(Y/N): ")
-            if continue_entry == 'Y' or continue_entry == 'y':
-                addflight = True
-            else:
-                addflight = False
-
-            continue
+            if addflight:
+                continue_entry = raw_input("Do you want to add another flight?(Y/N): ")
+                if continue_entry == 'Y' or continue_entry == 'y':
+                    addflight = True
+                else:
+                    addflight = False
 
 
         for fare in fare_list:
@@ -762,20 +752,16 @@ class Airbase(object):
             for item in fare_cost_list:
                 totalCost+=float(item)
 
-        index = len(flight_list)
-        x = 0
-
         #print out a table with all the flight numbers, fare codes, fare costs,
         #and a final row with the total cost for the tickets
 
         print "=========================================\n"
         print "+ Flight      Fare             Cost +\n"
         print "=========================================\n"
-        while x<index:
-            print "| " + flight_list[x] + "\t\t" + fare_list[x] + "\t\t$" + fare_cost_list[x] + " |\n"
-            x+=1
+        for flight, fare, cost in zip(flight_list, fare_list, fare_cost_list):
+            print "| " + flight + "\t\t" + fare + "\t\t$" + cost + " |\n"
         print "|_______________________________________|\n"
         print "| Total Cost:        " + str(totalCost) + " |\n"
         print "========================================\n"
 
-        return None
+        return totalCost
