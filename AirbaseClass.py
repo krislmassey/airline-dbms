@@ -461,7 +461,7 @@ class Airbase(object):
                 seat_number = seat_number[0]
             self.select("Leg_Schedule", "available_seat_number", "leg_number="+number)
             available = int(self._cursor.fetchone()[0]) - 1
-            if not self.update("Seats", "name,phone_number,available", str(name)+","+str(phone)+",false", "seat_number="+str(seat_number)):
+            if not self.update("Seats", "passenger_name,passenger_phone,available", str(name)+","+str(phone)+",0", "seat_number="+str(seat_number)):
                 print "Error reserving seat "+str(seat_number)+" on leg "+str(number)+"."
                 return False
             elif not self.update("Leg_Schedule", "available_seat_number", str(available), "leg_number="+str(number)):
@@ -516,7 +516,7 @@ class Airbase(object):
     def cancel(self, seat_number, leg_number, name):
         self.select("Leg_Schedule", "available_seat_number", "leg_number="+leg_number)
         available = int(self._cursor.fetchone()[0]) + 1
-        if not self.update("Seats", "available", "false", 'seat_number='+seat_number+' AND name="'+name+"'"):
+        if not self.update("Seats", "available", "1", 'seat_number='+seat_number+' AND name="'+name+"'"):
             return False
         elif not self.update("Leg_Schedule", "available_seat_number", str(available), "leg_number="+leg_number):
             return False
