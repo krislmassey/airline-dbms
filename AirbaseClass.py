@@ -711,12 +711,15 @@ class Airbase(object):
         cont = 'Y'
 
         while addflight:
-            flight = raw_input("Enter flight number: ")
-            
+            if not flight:
+                flight = raw_input("Enter flight number: ")
+            else:
+                addflight = False
+
             #check flights table to make sure flight exists
             selectStatement = "SELECT * FROM Flights F WHERE F.flight_number='" + str(flight) + "';"
             self._cursor.execute(selectStatement)
-            flightFound = self._cursor.fetchall()
+            flightFound = self._cursor.fetchone()
 
 
             if flightFound is None:
@@ -730,7 +733,7 @@ class Airbase(object):
             #check fare table to make sure fare exists
             selectStatement = "SELECT * FROM Flight_Fares F WHERE F.flight_number='" + str(flight) + "' AND F.fare_code='" + str(fare) + "';"
             self._cursor.execute(selectStatement)
-            fare_exists = self._cursor.fetchall()
+            fare_exists = self._cursor.fetchone()
 
             if fare_exists is None:
                 print "Fare selected not available for flight specified"
@@ -746,7 +749,7 @@ class Airbase(object):
                 continue_entry = raw_input("Do you want to add another flight?(Y/N): ")
                 if continue_entry == 'Y' or continue_entry == 'y':
                     addflight = True
-                    continue
+                    flight = None
                 else:
                     addflight = False
 
