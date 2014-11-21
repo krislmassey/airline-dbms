@@ -1,0 +1,80 @@
+<h1 id="airbase-airlinedatabasemanagementsystem">Airbase - Airline Database Management System</h1>
+
+<h2 id="tableofcontents">Table of Contents</h2>
+
+<ol>
+<li><a href="#setup">Setup</a>
+
+<ol>
+<li><a href="#databasesetup">Database Setup</a></li>
+<li><a href="#initialpopulation">Initial Population</a></li>
+<li><a href="#runningairbase">Running Airbase</a></li>
+</ol></li>
+<li><a href="#adminuse">Admin Use</a>
+
+<ol>
+<li><a href="#addingdata">Adding Data</a></li>
+<li><a href="#removingdata">Removing Data</a></li>
+<li><a href="#updatingdata">Updating Data</a></li>
+</ol></li>
+<li><a href="#customeruse">Customer Use</a>
+
+<ol>
+<li><a href="#findingflights">Finding Flights</a></li>
+<li><a href="#checkingflightcosts">Checking Flight Costs</a></li>
+<li><a href="#reservingflights">Reserving Flights</a></li>
+</ol></li>
+</ol>
+
+<h1 id="setup">Setup</h1>
+
+<h4 id="databasesetup">Database Setup</h4>
+
+<p>Airbase uses a standard MySQL database with a default user of &#8216;root&#8217; and no password. This can be changed in the first four lines of the <code>main(self)</code> function in the file <code>main.py</code>. Create a new database for Airbase.</p>
+
+<h4 id="initialpopulation">Initial Population</h4>
+
+<p>To populate the newly created database, the schema file must be loaded using the SQL command <code>SOURCE schema.sql</code>. If you would like to populate the database with some sample data, you can also execute <code>SOURCE populate.sql</code>. </p>
+
+<h4 id="runningairbase">Running Airbase</h4>
+
+<p>Airbase can be executed from the command line with the command <code>python main.py</code>. This will start the program and connect to the database specified in <code>main.py</code>.</p>
+
+<h1 id="adminuse">Admin Use</h1>
+
+<h4 id="viewingtables">Viewing Tables</h4>
+
+<p>A list of all tables in the database can be displayed by entering <code>t</code> on the main Airbase menu.<br/>
+Displaying the contents of a single table can be done by entering the command <code>v</code> on the main Airbase menu and entering the name of the table to view.</p>
+
+<h4 id="addingdata">Adding Data</h4>
+
+<p>Table entries can be added through the main Airbase menu. Enter <code>e</code> on the main Airbase menu and enter the selected table, the columns to insert into, and the values for each column in the same order. Multiple column and value inputs should be separated by commas. If the data was valid and no warnings were given, the new row is added to the database.</p>
+
+<h4 id="removingdata">Removing Data</h4>
+
+<p>Table entries can be removed through the main Airbase menu. Enter <code>d</code> on the main Airbase menu and enter the selected table, and the condition to check (the <code>WHERE</code> clause of the SQL statement). If the table is valid and the condition is met, any applicable rows will be removed.<br/>
+<em>Warning:</em> This is permanent.</p>
+
+<h4 id="updatingdata">Updating Data</h4>
+
+<p>Table entries can be updated through the main Airbase menu. Enter <code>u</code> on the main Airbase menu and enter the selected table, the columns to update, the new values for these columns, and the condition to check (the <code>WHERE</code> clause of the SQL statement). Multiple column and value inputs should be separated by commas. If the table, columns, and data are valid and the condition is met, any applicable rows will be updated.<br/>
+<em>Warning:</em> This is permanent.</p>
+
+<h1 id="customeruse">Customer Use</h1>
+
+<h4 id="enteringcustomermode">Entering Customer Mode</h4>
+
+<p>Customer Mode is activated by entering the <code>c</code> command on the main Airbase menu. This mode has functionality for finding flights, checking flight costs, and reserving flights.</p>
+
+<h4 id="findingflights">Finding Flights</h4>
+
+<p>Finding flights can be done by entering the <code>f</code> command on the customer menu. Enter the departure city, the two letter abbreviation for the departure state, the destination city, the two letter abbreviation for the destination state, the departure date, and the return flight date. The flight numbers of any flights matching this criteria will be displayed.</p>
+
+<h4 id="checkingflightcosts">Checking Flight Costs</h4>
+
+<p>Checking flight costs can be done by entering the <code>c</code> command on the customer menu. Enter a flight number and a fare code. If you wish to view the costs for another flight, enter <code>Y</code> to continue adding flights, or <code>N</code> to stop adding flights. The cost of each flight will then be displayed.</p>
+
+<h4 id="reservingflights">Reserving Flights</h4>
+
+<p>Reserving flights can be done by entering the <code>r</code> command on the customer menu. Enter the passenger&#8217;s name, phone number, the requested flight number, the number for each leg of the trip, and the fare code. If seats are available on the flight, one will be reserved.</p>
