@@ -454,11 +454,19 @@ class Airbase(object):
         for number in leg_numbers:
             self.select("Seats", "seat_number", "available=True AND flight_number="+flight_number)
             seat_number = self._cursor.fetchone()
+            if not seat_number:
+                print "No seats allocated for leg "+number+"."
+                return False
+            else:
+                seat_number = seat_number[0]
+            self.select("Leg_Schedule", "available_seat_number", "leg_number="+number)
+            available = int(self._cursor.fetchone()[0]) - 1
             if not self.update("Seats", "name,phone_number,available", str(name)+","+str(phone)+",false", "seat_number="+str(seat_number)):
                 print "Error reserving seat "+str(seat_number)+" on leg "+str(number)+"."
                 return False
-            elif not self.update("Leg_Schedule", "available_seat_number", "available_seat_number - 1", "leg_number="+str(number)):
+            elif not self.update("Leg_Schedule", "available_seat_number", str(available), "leg_number="+str(number)):
                 print "Error decrementing available seat number on leg "+str(number)+"."
+                return False
             else:
                 "Seat "+str(seat_number)+" reserved on leg "+str(number)+".\n"
 
@@ -506,9 +514,11 @@ class Airbase(object):
 ###  CANCEL A RESERVATION          ###
 ######################################
     def cancel(self, seat_number, leg_number, name):
+        self.select("Leg_Schedule", "available_seat_number", "leg_number="+leg_number)
+        available = int(self._cursor.fetchone()[0]) + 1
         if not self.update("Seats", "available", "false", 'seat_number='+seat_number+' AND name="'+name+"'"):
             return False
-        elif not self.update("Leg_Schedule", "available_seat_number", "available_seat_number + 1", "leg_number="+leg_number):
+        elif not self.update("Leg_Schedule", "available_seat_number", str(available), "leg_number="+leg_number):
             return False
         return True
 
