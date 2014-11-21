@@ -95,7 +95,7 @@ flight_number INTEGER NOT NULL,
 leg_number INTEGER NOT NULL,
 available BOOLEAN,
 FOREIGN KEY (flight_number) REFERENCES Flights(flight_number),
-FOREIGN KEY (leg_number) REFERENCES Leg_Instance(leg_number)
+FOREIGN KEY (leg_number) REFERENCES Leg_Schedule(leg_number)
 );
 
 CREATE TABLE Flight_Days (

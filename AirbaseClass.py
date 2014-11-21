@@ -454,13 +454,13 @@ class Airbase(object):
         for number in leg_numbers:
             self.select("Seats", "seat_number", "available=True AND flight_number="+flight_number)
             seat_number = self._cursor.fetchone()
-            if not self.update("Seats", "name,phone_number,available", name+","+phone+",false", "seat_number="+seat_number):
-                print "Error reserving seat "+seat_number+" on leg "+number+"."
+            if not self.update("Seats", "name,phone_number,available", str(name)+","+str(phone)+",false", "seat_number="+str(seat_number)):
+                print "Error reserving seat "+str(seat_number)+" on leg "+str(number)+"."
                 return False
-            elif not self.update("Leg_Schedule", "available_seat_number", "available_seat_number - 1", "leg_number="+number):
-                print "Error decrementing available seat number on leg "+number+"."
+            elif not self.update("Leg_Schedule", "available_seat_number", "available_seat_number - 1", "leg_number="+str(number)):
+                print "Error decrementing available seat number on leg "+str(number)+"."
             else:
-                "Seat "+seat_number+" reserved on leg "+number+".\n"
+                "Seat "+str(seat_number)+" reserved on leg "+str(number)+".\n"
 
 
     def reservation(self):
@@ -711,10 +711,8 @@ class Airbase(object):
         cont = 'Y'
 
         while addflight:
-            if not flight:
-                flight = raw_input("Enter flight number: ")
-            else:
-                addflight = False
+            flight = raw_input("Enter flight number: ")
+            
             #check flights table to make sure flight exists
             selectStatement = "SELECT * FROM Flights F WHERE F.flight_number='" + str(flight) + "';"
             self._cursor.execute(selectStatement)
@@ -748,6 +746,7 @@ class Airbase(object):
                 continue_entry = raw_input("Do you want to add another flight?(Y/N): ")
                 if continue_entry == 'Y' or continue_entry == 'y':
                     addflight = True
+                    continue
                 else:
                     addflight = False
 
