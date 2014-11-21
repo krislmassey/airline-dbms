@@ -168,18 +168,18 @@ VALUES('5','5');
 
 
 INSERT INTO Seats
-VALUES('1','','','1','1','Y');
+VALUES('1','1','1','1','1','1');
 
 INSERT INTO Seats
-VALUES('2','','','1','1','Y');
+VALUES('2','1','1','1','1','1');
 
 INSERT INTO Seats
-VALUES('3','','','1','1','Y');
+VALUES('3','1','1','1','1','1');
 
 INSERT INTO Seats
-VALUES('4','','','1','1','Y');
+VALUES('4','1','1','1','1','1');
 
 INSERT INTO Seats
-VALUES('5','','','1','1','Y');
+VALUES('5','1','1','1','1','1');
 
 
