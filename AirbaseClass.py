@@ -727,6 +727,7 @@ class Airbase(object):
                 cont = raw_input("Continue?(Y/N): ")
                 if cont == 'N' or cont == 'n':
                     break
+                flight = None
                 continue
 
             fare = raw_input("Enter fare code: ")
@@ -740,6 +741,7 @@ class Airbase(object):
                 cont = raw_input("Continue?(Y/N): ")
                 if cont == 'N' or cont == 'n':
                     break
+                flight = None
                 continue
 
             flight_list.append(flight)
