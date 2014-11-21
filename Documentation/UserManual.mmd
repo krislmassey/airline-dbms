@@ -1,0 +1,57 @@
+#Airbase - Airline Database Management System
+##Table of Contents
+
+1. [Setup][]
+    1. [Database Setup][]
+    2. [Initial Population][]
+    3. [Running Airbase][]
+2. [Admin Use][]
+    1. [Adding Data][]
+    2. [Removing Data][]
+    3. [Updating Data][]
+3. [Customer Use][]
+    1. [Finding Flights][]
+    2. [Checking Flight Costs][]
+    3. [Reserving Flights][]
+
+##Setup
+###Database Setup
+Airbase uses a standard MySQL database with a default user of 'root' and no password. This can be changed in the first four lines of the `main(self)` function in the file `main.py`. Create a new database for Airbase.
+
+###Initial Population
+To populate the newly created database, the schema file must be loaded using the SQL command `SOURCE schema.sql`. If you would like to populate the database with some sample data, you can also execute `SOURCE populate.sql`.  
+
+###Running Airbase
+Airbase can be executed from the command line with the command `python main.py`. This will start the program and connect to the database specified in `main.py`.
+
+##Admin Use
+###Viewing Tables
+A list of all tables in the database can be displayed by entering `t` on the main Airbase menu.  
+Displaying the contents of a single table can be done by entering the command `v` on the main Airbase menu and entering the name of the table to view.
+
+###Adding Data
+Table entries can be added through the main Airbase menu. Enter `e` on the main Airbase menu and enter the selected table, the columns to insert into, and the values for each column in the same order. Multiple column and value inputs should be separated by commas. If the data was valid and no warnings were given, the new row is added to the database.
+
+###Removing Data
+Table entries can be removed through the main Airbase menu. Enter `d` on the main Airbase menu and enter the selected table, and the condition to check (the `WHERE` clause of the SQL statement). If the table is valid and the condition is met, any applicable rows will be removed.  
+*Warning:* This is permanent.
+
+###Updating Data
+Table entries can be updated through the main Airbase menu. Enter `u` on the main Airbase menu and enter the selected table, the columns to update, the new values for these columns, and the condition to check (the `WHERE` clause of the SQL statement). Multiple column and value inputs should be separated by commas. If the table, columns, and data are valid and the condition is met, any applicable rows will be updated.  
+*Warning:* This is permanent.
+
+##Customer Use
+###Entering Customer Mode
+Customer Mode is activated by entering the `c` command on the main Airbase menu. This mode has functionality for finding flights, checking flight costs, and reserving flights.
+
+###Finding Flights
+Finding flights can be done by entering the `f` command on the customer menu. Enter the departure city, the two letter abbreviation for the departure state, the destination city, the two letter abbreviation for the destination state, the departure date, and the return flight date. The flight numbers of any flights matching this criteria will be displayed.
+
+###Checking Flight Costs
+Checking flight costs can be done by entering the `c` command on the customer menu. Enter a flight number and a fare code. If you wish to view the costs for another flight, enter `Y` to continue adding flights, or `N` to stop adding flights. The cost of each flight will then be displayed.
+
+###Reserving Flights
+Reserving flights can be done by entering the `r` command on the customer menu. Enter the passenger's name, phone number, the requested flight number, the number for each leg of the trip, and the fare code. If seats are available on the flight, one will be reserved.
+
+
+
