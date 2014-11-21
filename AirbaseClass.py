@@ -516,10 +516,12 @@ class Airbase(object):
     def cancel(self, seat_number, leg_number, name):
         self.select("Leg_Schedule", "available_seat_number", "leg_number="+str(leg_number))
         available = int(self._cursor.fetchone()[0]) + 1
-        if not self.update("Seats", "available", "1", 'seat_number='+str(seat_number)+' AND name="'+str(name)+"'"):
+        if not self.update("Seats", "available", "1", "seat_number="+str(seat_number)+" AND passenger_name='"+str(name)+"'"):
             return False
-        elif not self.update("Leg_Schedule", "available_seat_number", str(available), "leg_number="+str(leg_number)):
+        if not self.update("Leg_Schedule", "available_seat_number", str(available), "leg_number="+str(leg_number)):
             return False
+        self.update("Seats", "passenger_name", "none", "seat_number="+str(seat_number)+" AND passenger_name='" +str(name)+"'")
+        self.update("Seats", "passenger_phone","none", 'seat_number='+str(seat_number))
         return True
 
     def cancelReservation(self):
@@ -728,7 +730,7 @@ class Airbase(object):
 
             #check flights table to make sure flight exists
             selectStatement = "SELECT * FROM Flights F WHERE F.flight_number='" + str(flight) + "';"
-            self._cursor.execute(selectStatement)
+            self.dbWrite(selectStatement)
             flightFound = self._cursor.fetchone()
 
 
@@ -743,7 +745,7 @@ class Airbase(object):
             fare = raw_input("Enter fare code: ")
             #check fare table to make sure fare exists
             selectStatement = "SELECT * FROM Flight_Fares F WHERE F.flight_number='" + str(flight) + "' AND F.fare_code='" + str(fare) + "';"
-            self._cursor.execute(selectStatement)
+            self.dbWrite(selectStatement)
             fare_exists = self._cursor.fetchone()
 
             if fare_exists is None:
@@ -769,7 +771,7 @@ class Airbase(object):
         for fare in fare_list:
             #find cost of fare
             selectStatement = "SELECT F.fare_cost FROM Fares F WHERE F.fare_code='" + str(fare) + "';"
-            self._cursor.execute(selectStatement)
+            self.dbWrite(selectStatement)
             cost = self._cursor.fetchone()
             #put fare cost in fare_cost_list
             fare_cost_list.append(str(cost[0]))
