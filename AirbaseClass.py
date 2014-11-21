@@ -514,33 +514,33 @@ class Airbase(object):
 ###  CANCEL A RESERVATION          ###
 ######################################
     def cancel(self, seat_number, leg_number, name):
-        self.select("Leg_Schedule", "available_seat_number", "leg_number="+leg_number)
+        self.select("Leg_Schedule", "available_seat_number", "leg_number="+str(leg_number))
         available = int(self._cursor.fetchone()[0]) + 1
-        if not self.update("Seats", "available", "1", 'seat_number='+seat_number+' AND name="'+name+"'"):
+        if not self.update("Seats", "available", "1", 'seat_number='+str(seat_number)+' AND name="'+str(name)+"'"):
             return False
-        elif not self.update("Leg_Schedule", "available_seat_number", str(available), "leg_number="+leg_number):
+        elif not self.update("Leg_Schedule", "available_seat_number", str(available), "leg_number="+str(leg_number)):
             return False
         return True
 
     def cancelReservation(self):
 
         #delete rows from Seats where flight=user_input_flight
-        seat_number = raw_input("Enter seat nubmer: ")
+        seat_number = raw_input("Enter seat number: ")
         #and where leg_number = user_input_leg_number
         leg_number = raw_input("Enter leg number: ")
         #and where passenter name = user_input_name
         name = raw_input("Enter name: ")
 
-        self.select("Seats", "seat_number", 'name="'+name+'" AND leg_number='+leg_number)
+        self.select("Seats", "seat_number", "passenger_name='" +str(name)+ "' AND leg_number="+str(leg_number))
         if not self._cursor.fetchone():
-            print "Seat number "+seat_number+" not found."
+            print "Seat number "+str(seat_number)+" not found."
             return 0
 
         if not self.cancel(seat_number, leg_number, name):
             print "Error cancelling reservation."
             return 0
 
-        #decrement legs for every leg entered
+        #clears entry from seat table and increments leg seats_available for every leg entered
         return None
 
 ######################################

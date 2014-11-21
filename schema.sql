@@ -90,7 +90,7 @@ FOREIGN KEY (leg_number) REFERENCES Leg_Schedule(leg_number)
 CREATE TABLE Seats (
 seat_number VARCHAR(4) NOT NULL,
 passenger_name VARCHAR(20),
-passenger_phone INTEGER,
+passenger_phone VARCHAR(14),
 flight_number INTEGER NOT NULL,
 leg_number INTEGER NOT NULL,
 available BOOLEAN,
