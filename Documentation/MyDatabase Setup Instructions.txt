@@ -1,0 +1,116 @@
+=====================================================
+=====================================================
+
+MYDATABASE.PY SETUP
+
+=====================================================
+=====================================================
+
+
+
+
+======
+STEP 1:  CONNECT TO TARGET DATABASE SERVER
+======
+
+-	Make sure the local machine is connected and able to
+	recieve information from the target device
+
+-	To test this, ping the target device (in this case
+	Muto (10.44.2.128)) and make sure there is no packet loss
+
+======
+STEP 2:  LOG IN TO phpMyAdmin
+======
+
+-	Make sure a database is already set up on the server you are connecting to
+
+-	By using your favorite browser,log into phpMyAdmin @ server_IP/phpmyadmin/   
+	(example: type in browser  10.44.2.128/phpmyadmin/)
+
+-	Make sure you are able to log into the webpage with your
+	username (example: root) and password credentials (example: alabio)
+
+-	MAKE SURE YOU HAVE THE PERMISSION TO EDIT TABLES.
+	This is very important. Most database functions will not work unless
+	you are granted priviledges. The master-command to grant all privileges
+	to a user is as follows.
+	
+	After selecting the SQL tab in phpMyAdmin, fill in the template below:
+	
+	<GRANT ALL PRIVILEGES ON databaseName.* TO 'username'@'machineIP'
+	IDENTIFIED BY 'password' WITH GRANT OPTION;  FLUSH PRIVILEGES;>
+
+	Note: databaseName, username, machineIP, and password represent the
+	actual values of these data points that you will enter into the command
+
+	Example:
+	GRANT ALL PRIVILEGES ON TestDB2.* TO 'root'@'172.22.114.186'
+	IDENTIFIED BY 'alabio' WITH GRANT OPTION; FLUSH PRIVILEGES; 
+
+        Copy and paste this command into the box in the "SQL" tab.
+	Then press <Go> button.  The command should execute and a green box
+	should appear at the top with the command you entered.  This means it
+	executed successfully. If instead a red box appears then there is
+	either a problem with your SQL syntax or another issue.  
+         
+	
+
+-	To verify that command has run successfully, go to the sidebar of database under the purple and orange "phpMyAdmin" logo.  Scroll down until you find the "mysql"
+	link and click on it.  Another list of tables should drop down.  Scroll down these tables until you find one named 'user' and left click on it.
+	On this table will be a list of all users, their hosts, passwords (encrypted), and the priviledges they have.  Check to make sure the username
+	you entered is there.  Do not be overly concerned if not all of the privilege boxes say "Y".  If you ran the grant privileges command you should
+	have the privileges for the database you specified.  However if you try to run MyDatabase and continually experience write errors, you can manually go in
+	to this page, click the "Edit" link near the yellow pencil icon, and manually change all of your
+	privileges to "Y".  If you are still having connection problems at this point, the error is probably springing from something else.  Another big potential
+	problem you might be facing is the MySQL client interface you are using.  How to deal with this is explained in step 4.
+
+======
+STEP 3:  DOWNLOAD MYSQL INTERFACE FOR YOUR OPERATING SYSTEM (assuming you're using windows 7)
+======
+
+-	The primary dependency of MyDatabase.py is the MySQLdb module incorporated
+	in it.  To use this the local machine must by equipped with the MySQL framework
+
+-	For windows 7 machines, a download of MySQL can be found at the following link:
+	http://www.codegood.com/archives/129
+
+	Download the applicable version for your machine and install it.
+
+-       Install the app by using defaults (just keep clicking "next") 
+
+-	Make sure that MySQL is set up in the filepath of your machine.  At this point
+	if your MyDatabase module has been showing up an import error for "import MySQLdb"
+	that should go away now.  If not...  further troubleshooting required
+
+======
+STEP 4:  DOWNLOAD MYSQL CLIENT FOR YOUR OPERATING SYSTEM (assuming you're using windows 7)
+======
+
+-	If your machine doesn't already have the MySQL client installed go to
+	dev.mysql.com/downloads
+
+-	Click on the link titled "MySQL on Windows (Installer & Tools)"
+
+-	Click on "MySQL Installer"
+
+-	Scroll down the page and click on the blue "Download" button by the topmost title
+	that should say something like "Windows (x86, 32-bit), MSI Installer	5.6.19	1.5M"
+
+-	Run through the download procedures.  Make sure your computer has all of the required
+	frameworks to proceed.  You will need the .Net framework as well as microsoft excel 2007
+
+-	After the installer is successfully loaded make sure that its directory is in your computer's
+	path.  To add it to the path go to:
+
+	Control Panel > System and Security > System > Advanced system settings > Advanced > Environmental Variables > Select "Path" under "System Variables" > Click "Edit"
+
+	Once you are into the editor, append the filepath of your mysql client folder to the end
+
+	The client folder should be named something like "C:\mysql-5.6.19-winx64\bin"
+
+- 	After this is added go back to the MyDatabase.py document in your python editor of choice and
+	make sure the import statement is not turning up an error.  
+
+
+
